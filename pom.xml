@@ -35,10 +35,9 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>org.wildfly.core</groupId>
-			<artifactId>wildfly-server</artifactId>
-			<version>2.2.0.Final</version>
-			<scope>provided</scope>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.194</version>
 		</dependency>
 	</dependencies>
 </project>
