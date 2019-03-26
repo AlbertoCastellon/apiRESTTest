@@ -34,9 +34,8 @@ public class Car {
 		
 	}
 
-	public Car(int id, String brand, Timestamp registration, String country, Timestamp createdAt, Timestamp lastUpdated) {
+	public Car(String brand, Timestamp registration, String country, Timestamp createdAt, Timestamp lastUpdated) {
 		super();
-		this.id = id;
 		this.brand = brand;
 		this.registration = registration;
 		this.country = country;

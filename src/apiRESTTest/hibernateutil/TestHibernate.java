@@ -1,32 +1,24 @@
-package apiRESTTest;
+package apiRESTTest.hibernateutil;
 
 import java.sql.Timestamp;
 
-import org.apache.log4j.BasicConfigurator;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
+
+import apiRESTTest.Car;
+
 
 public class TestHibernate {
 	
-	private static SessionFactory factory; 
+	private static SessionFactory factory;
 
 	public static void main(String[] args) {
 		
-		BasicConfigurator.configure();
+		factory = new HibernateUtil().config();
 		
-		try {
-			
-			factory = new Configuration().configure().buildSessionFactory();
-			
-		} catch (Throwable ex) {
-			System.err.println("Failed to create sessionFactory object." + ex);
-			throw new ExceptionInInitializerError(ex);
-		}
-
-		Car car = new Car(0, "BMW", new Timestamp(System.currentTimeMillis()), "Germany",
+		Car car = new Car("BMW", new Timestamp(System.currentTimeMillis()), "Germany",
 				new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
 
 		Integer carID1 = addCar(car);
