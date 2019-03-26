@@ -1,6 +1,8 @@
 package apiRESTTest.hibernateutil;
 
 
+import java.util.logging.Logger;
+
 import org.apache.log4j.BasicConfigurator;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -9,7 +11,7 @@ public class HibernateUtil {
 
 	private static SessionFactory factory;
 
-	public SessionFactory config() {
+	private SessionFactory buildSessionFactory() {
 
 		BasicConfigurator.configure();
 
@@ -23,6 +25,12 @@ public class HibernateUtil {
 		}
 		
 		return factory;
+		
+	}
+	
+	public SessionFactory getSessionFactory() {
+		
+		return buildSessionFactory();
 		
 	}
 

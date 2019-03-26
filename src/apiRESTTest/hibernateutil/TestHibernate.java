@@ -16,7 +16,7 @@ public class TestHibernate {
 
 	public static void main(String[] args) {
 		
-		factory = new HibernateUtil().config();
+		factory = new HibernateUtil().getSessionFactory();
 		
 		Car car = new Car("BMW", new Timestamp(System.currentTimeMillis()), "Germany",
 				new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));

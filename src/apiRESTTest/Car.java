@@ -18,7 +18,7 @@ public class Car {
 	@Id
     @GeneratedValue(strategy= GenerationType.AUTO) 
 	@Column(name = "id")
-	private int id;
+	private UUID id;
 	@Column(name = "brand")
 	private String brand;
 	@Column(name = "registration")
@@ -43,11 +43,11 @@ public class Car {
 		this.lastUpdated = lastUpdated;
 	}
 
-	public int getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 
