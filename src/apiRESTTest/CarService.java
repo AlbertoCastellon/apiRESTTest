@@ -107,11 +107,11 @@ public class CarService {
 	private void populateCars() {
 
 		if (cars.isEmpty()) {
-			cars.add(new Car(cars.size(), "BMW", new Timestamp(System.currentTimeMillis()), "Germany",
+			cars.add(new Car("BMW", new Timestamp(System.currentTimeMillis()), "Germany",
 					new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis())));
-			cars.add(new Car(cars.size(), "Kia", new Timestamp(System.currentTimeMillis()), "Japan",
+			cars.add(new Car("Kia", new Timestamp(System.currentTimeMillis()), "Japan",
 					new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis())));
-			cars.add(new Car(cars.size(), "Seat", new Timestamp(System.currentTimeMillis()), "Spain",
+			cars.add(new Car("Seat", new Timestamp(System.currentTimeMillis()), "Spain",
 					new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis())));
 		}
 	}
