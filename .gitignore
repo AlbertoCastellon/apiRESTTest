@@ -1,0 +1,5 @@
+target/classes/apiRESTTest/CarService.class
+target/classes/apiRESTTest/Car.class
+target/classes/hibernate.cfg.xml
+target/classes/apiRESTTest/TestHibernate.class
+target/

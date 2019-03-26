@@ -1,5 +1,6 @@
 package apiRESTTest;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,11 +17,17 @@ public class Car {
 
 	@Id
     @GeneratedValue(strategy= GenerationType.AUTO) 
+	@Column(name = "id")
 	private int id;
+	@Column(name = "brand")
 	private String brand;
+	@Column(name = "registration")
 	private Timestamp registration;
+	@Column(name = "country")
 	private String country;
+	@Column(name = "createdAt")
 	private Timestamp createdAt;
+	@Column(name = "lastUpdated")
 	private Timestamp lastUpdated;
 
 	public Car() {
