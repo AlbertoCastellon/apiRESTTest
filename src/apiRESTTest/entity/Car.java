@@ -1,4 +1,4 @@
-package apiRESTTest;
+package apiRESTTest.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
