@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -16,9 +17,10 @@ import java.util.UUID;
 public class Car {
 
 	@Id
-    @GeneratedValue(strategy= GenerationType.AUTO) 
+	@GeneratedValue(generator="system-uuid")
+	@GenericGenerator(name="system-uuid", strategy="uuid")
 	@Column(name = "id")
-	private UUID id;
+	private String id;
 	@Column(name = "brand")
 	private String brand;
 	@Column(name = "registration")
@@ -43,11 +45,11 @@ public class Car {
 		this.lastUpdated = lastUpdated;
 	}
 
-	public UUID getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

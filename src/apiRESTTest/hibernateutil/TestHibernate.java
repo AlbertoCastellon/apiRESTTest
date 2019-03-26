@@ -1,6 +1,7 @@
 package apiRESTTest.hibernateutil;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -20,12 +21,12 @@ public class TestHibernate {
 		
 		Car car = new Car("BMW", new Timestamp(System.currentTimeMillis()), "Germany",
 				new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
-
-		Integer carID1 = addCar(car);
+		
+		addCar(car);
 		
 	}
 
-	public static Integer addCar(Car car) {
+	public static void addCar(Car car) {
 		
 		Session session = factory.openSession();
 		Transaction tx = null;
@@ -33,7 +34,7 @@ public class TestHibernate {
 
 		try {
 			tx = session.beginTransaction();
-			carID = (Integer) session.save(car);
+			session.save(car);
 			tx.commit();
 		} catch (HibernateException e) {
 			if (tx != null)
@@ -42,7 +43,7 @@ public class TestHibernate {
 		} finally {
 			session.close();
 		}
-		return carID;
+		
 		
 	}
 }
