@@ -1,11 +1,13 @@
 package apiRESTTest.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -15,21 +17,27 @@ import java.util.UUID;
 public class Car {
 
 	@Id
-    @GeneratedValue(strategy= GenerationType.AUTO) 
-	private int id;
+	@GeneratedValue(generator="system-uuid")
+	@GenericGenerator(name="system-uuid", strategy="uuid")
+	@Column(name = "id")
+	private String id;
+	@Column(name = "brand")
 	private String brand;
+	@Column(name = "registration")
 	private Timestamp registration;
+	@Column(name = "country")
 	private String country;
+	@Column(name = "createdAt")
 	private Timestamp createdAt;
+	@Column(name = "lastUpdated")
 	private Timestamp lastUpdated;
 
 	public Car() {
 		
 	}
 
-	public Car(int id, String brand, Timestamp registration, String country, Timestamp createdAt, Timestamp lastUpdated) {
+	public Car(String brand, Timestamp registration, String country, Timestamp createdAt, Timestamp lastUpdated) {
 		super();
-		this.id = id;
 		this.brand = brand;
 		this.registration = registration;
 		this.country = country;
@@ -37,11 +45,11 @@ public class Car {
 		this.lastUpdated = lastUpdated;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
