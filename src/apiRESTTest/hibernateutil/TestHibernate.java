@@ -8,7 +8,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import apiRESTTest.Car;
+import apiRESTTest.entity.Car;
+
 
 
 public class TestHibernate {
@@ -17,7 +18,7 @@ public class TestHibernate {
 
 	public static void main(String[] args) {
 		
-		factory = new HibernateUtil().getSessionFactory();
+		factory = HibernateUtil.getSessionFactory();
 		
 		Car car = new Car("BMW", new Timestamp(System.currentTimeMillis()), "Germany",
 				new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));

@@ -11,7 +11,7 @@ public class HibernateUtil {
 
 	private static SessionFactory factory;
 
-	private SessionFactory buildSessionFactory() {
+	private static SessionFactory buildSessionFactory() {
 
 		BasicConfigurator.configure();
 
@@ -28,7 +28,7 @@ public class HibernateUtil {
 		
 	}
 	
-	public SessionFactory getSessionFactory() {
+	public static SessionFactory getSessionFactory() {
 		
 		return buildSessionFactory();
 		

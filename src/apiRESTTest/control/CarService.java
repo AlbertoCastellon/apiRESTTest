@@ -1,18 +1,25 @@
 package apiRESTTest.control;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Query;
-import javax.transaction.Transaction;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.eclipse.persistence.sessions.Session;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+
+import com.google.gson.Gson;
 
 import apiRESTTest.entity.Car;
+import apiRESTTest.hibernateutil.HibernateUtil;
 
 public class CarService {
-
+	
 	public Response addCar(Car car) {
 		
         Transaction trns = null;
@@ -34,12 +41,13 @@ public class CarService {
         
     }
 
-    public Response deleteCar(int carId) {
+    public Response deleteCar(String carId) {
+    	
         Transaction trns = null;
         Session session = HibernateUtil.getSessionFactory().openSession();
         try {
             trns = session.beginTransaction();
-            Car car = (Car) session.load(Car.class, new Integer(carId));
+            Car car = (Car) session.load(Car.class, (carId));
             session.delete(car);
             session.getTransaction().commit();
         } catch (RuntimeException e) {
@@ -73,9 +81,11 @@ public class CarService {
         return Response.ok(car).build();
     }
 
-    public Response getAllCars() {
+    @SuppressWarnings("unchecked")
+	public Response getAllCars() {
+    	
         List<Car> cars = new ArrayList<Car>();
-        Transaction trns = null;
+        Transaction trns;
         Session session = HibernateUtil.getSessionFactory().openSession();
         try {
             trns = session.beginTransaction();
@@ -86,18 +96,20 @@ public class CarService {
             session.flush();
             session.close();
         }
-        return Response.ok(carListIterator(cars), MediaType.APPLICATION_JSON).build();
+       
+        return Response.ok(new Gson().toJson(cars), MediaType.APPLICATION_JSON).build();
     }
+    
 
-    public Response getCarById(int carId) {
+    public Response getCarById(String carId) {
         Car car = null;
         Transaction trns = null;
         Session session = HibernateUtil.getSessionFactory().openSession();
         try {
             trns = session.beginTransaction();
-            String queryString = "from User where id = :id";
+            String queryString = "from Car where id = :id";
             Query query = session.createQuery(queryString);
-            query.setInteger("id", carId);
+            query.setString("id", carId);
             car = (Car) query.uniqueResult();
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -107,13 +119,4 @@ public class CarService {
         }
         return Response.ok(car, MediaType.APPLICATION_JSON).build();
     }
-    
-    private String carListIterator(List<Car> cars2) {
-
-		StringBuffer strBuffer = new StringBuffer();
-		for (Car c : cars2) {
-			strBuffer.append(c.toString() + "\n");
-		}
-		return strBuffer.toString();
-	}
 }
