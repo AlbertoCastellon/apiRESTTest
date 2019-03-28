@@ -20,25 +20,23 @@ public class CarService {
 		return (List<Car>) em.createQuery("SELECT c FROM Car c").getResultList();
 	}
 	
-	public Car getCar(int carId) {
+	public Car getCar(final int carId) {
 		return em.find(Car.class, carId);
 	}
 	
-	public Car addCar(Car car) {
+	public Car createCar(final Car car) {
 		
-//		Car newCar = new Car();
-//		newCar.setBrand(car.getBrand());
-//		newCar.setCountry(car.getCountry());
-//		newCar.setRegistration(car.getRegistration());
-//		
-//		em.persist(newCar);
+		Car car1 = new Car();
+		car1.setBrand(car.getBrand());
+		car1.setCountry(car.getCountry());
+		car1.setRegistration(car.getRegistration());
 		
-		em.persist(car);
+		em.persist(car1);
 
 		return car;
 	}
 	
-	public Car updateCar(Car car) {
+	public Car updateCar(final Car car) {
 		
 		em.merge(car);
 		
@@ -46,9 +44,9 @@ public class CarService {
 	
 	}
 	
-	public void deleteCar(int idCar) {
+	public void deleteCar(final int carId) {
 		
-		em.remove(em.find(Car.class, idCar));
+		em.remove(em.find(Car.class, carId));
 		
 	}
 

@@ -20,8 +20,6 @@ import acastemi.cars.control.CarService;
 import acastemi.cars.entity.Car;
 
 
-
-
 @Path("/cars")
 @Consumes(value = MediaType.APPLICATION_JSON)
 @Produces(value = MediaType.APPLICATION_JSON)
@@ -37,21 +35,21 @@ public class CarResource {
 
 	@GET
 	@Path("{carId}")
-	public Response findCar(@PathParam("carId") int carId) {
+	public Response findCar(@PathParam("carId") final int carId) {
 
 		return Response.ok(carSvc.getCar(carId), MediaType.APPLICATION_JSON).build();
 
 	}
 	
 	@POST
-	public Response createCar(Car carRequest) {
+	public Response createCar(final Car carRequest) {
 		
-		return Response.ok(carSvc.addCar(carRequest)).build();
+		return Response.ok(carSvc.createCar(carRequest)).build();
 
 	}
 	
 	@PUT
-	public Response updateCar(Car carRequest) {
+	public Response updateCar(final Car carRequest) {
 		
 		return Response.ok(carSvc.updateCar(carRequest)).build();
 		
@@ -59,7 +57,7 @@ public class CarResource {
 
 	@DELETE
 	@Path("{carId}")
-	public Response deleteCar(@PathParam("carId") int carId) {
+	public Response deleteCar(@PathParam("carId") final int carId) {
 		
 		carSvc.deleteCar(carId);
 		

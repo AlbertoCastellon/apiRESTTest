@@ -1,8 +1,6 @@
 package acastemi.cars.entity;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,8 +31,10 @@ public class Car {
 	@Size(min=3, max=30)
 	private String country;
 	@Column(name = "createdAt")
+	@CreationTimestamp
 	private Timestamp createdAt;
 	@Column(name = "lastUpdated")
+	@UpdateTimestamp
 	private Timestamp lastUpdated;
 
 	public int getId() {
