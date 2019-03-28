@@ -1,6 +1,8 @@
 package acastemi.cars.rest;
 
 
+import java.util.ArrayList;
+
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -14,10 +16,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.google.gson.Gson;
-
 import acastemi.cars.control.CarService;
 import acastemi.cars.entity.Car;
+import acastemi.cars.util.ValidatorUtil;
 
 
 @Path("/cars")
@@ -30,28 +31,54 @@ public class CarResource {
 
 	@GET
 	public Response findAllCars() {
-		return Response.ok(new Gson().toJson(carSvc.getCars()), MediaType.APPLICATION_JSON).build();
+		return Response.ok(carSvc.getCars(), MediaType.APPLICATION_JSON).build();
 	}
 
 	@GET
 	@Path("{carId}")
 	public Response findCar(@PathParam("carId") final int carId) {
 
-		return Response.ok(carSvc.getCar(carId), MediaType.APPLICATION_JSON).build();
+		final Car car = carSvc.getCar(carId);
+		
+		if(car==null)
+			return Response.status(404).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
+			.build();
+		else 
+			return Response.ok(car, MediaType.APPLICATION_JSON).build();
 
 	}
 	
 	@POST
 	public Response createCar(final Car carRequest) {
 		
+		final ArrayList<String> validationsErrors = ValidatorUtil.validate(carRequest);
+		
+		if(!validationsErrors.isEmpty()) 
+			return Response.status(400).entity(validationsErrors)
+					.build();
+		
 		return Response.ok(carSvc.createCar(carRequest)).build();
 
 	}
 	
 	@PUT
-	public Response updateCar(final Car carRequest) {
+	@Path("{carId}")
+	public Response updateCar(final Car carRequest, @PathParam("carId") final int carId) {
 		
-		return Response.ok(carSvc.updateCar(carRequest)).build();
+		final ArrayList<String> validationsErrors = ValidatorUtil.validate(carRequest);
+		
+		if(!validationsErrors.isEmpty()) 
+			return Response.status(400).entity(validationsErrors)
+					.build();
+		
+		final Car car = carSvc.updateCar(carRequest, carId);
+		
+		if(car==null)
+			return Response.status(400).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
+			.build();
+		else 
+			return Response.ok(car, MediaType.APPLICATION_JSON).build();
+		
 		
 	}
 
@@ -59,9 +86,11 @@ public class CarResource {
 	@Path("{carId}")
 	public Response deleteCar(@PathParam("carId") final int carId) {
 		
-		carSvc.deleteCar(carId);
-		
-		return Response.noContent().build();
+		if(carSvc.deleteCar(carId))
+			return Response.noContent().build();
+		else
+			return Response.status(400).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
+				.build();
 		
 	}
 
