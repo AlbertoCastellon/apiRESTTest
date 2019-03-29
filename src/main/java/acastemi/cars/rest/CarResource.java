@@ -1,7 +1,9 @@
 package acastemi.cars.rest;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -18,8 +20,8 @@ import javax.ws.rs.core.Response;
 
 import acastemi.cars.control.CarService;
 import acastemi.cars.entity.Car;
+import acastemi.cars.util.MyLogger;
 import acastemi.cars.util.ValidatorUtil;
-
 
 @Path("/cars")
 @Consumes(value = MediaType.APPLICATION_JSON)
@@ -28,6 +30,9 @@ public class CarResource {
 
 	@EJB
 	private CarService carSvc;
+	
+	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 
 	@GET
 	public Response findAllCars() {
@@ -43,8 +48,17 @@ public class CarResource {
 		if(car==null)
 			return Response.status(404).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
 			.build();
-		else 
+		else {
+			try {
+				MyLogger.setup();
+			} catch (IOException e) {
+				e.printStackTrace();
+	            throw new RuntimeException("Problems with creating the log files");
+			}
+			LOGGER.info("The car " + car + " was added to the database.");
 			return Response.ok(car, MediaType.APPLICATION_JSON).build();
+			
+		}
 
 	}
 	
