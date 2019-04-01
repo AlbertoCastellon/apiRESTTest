@@ -1,7 +1,8 @@
 package acastemi.cars.control;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
+
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -16,7 +17,7 @@ import acastemi.cars.entity.Car;
 @Stateless
 public class CarService {
 	
-	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	private final static Logger LOGGER = Logger.getLogger(CarService.class);
 	
 	/**
 	 * The entity manager object that it's injected by the container and created 
@@ -59,7 +60,7 @@ public class CarService {
 	 */
 	public Car createCar(final Car car) {
 
-		LOGGER.info("Creating the car " + car + "in the database");
+		LOGGER.info("Creating the car "+ car.toString2() +" in the database");
 		em.persist(car);
 
 		return car;

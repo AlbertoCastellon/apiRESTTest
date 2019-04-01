@@ -118,6 +118,10 @@ public class Car {
 				+ ", createdAt= " + createdAt + ", lastUpdated= " + lastUpdated + "]";
 	}
 	
+	public String toString2() {
+		return "Car [brand= " + brand + ", registration= " + registration + ", country= " + country + "]";
+	}
+	
 	
 	
 }
