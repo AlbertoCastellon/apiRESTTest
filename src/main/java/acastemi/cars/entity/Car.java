@@ -14,6 +14,16 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+
+/**
+ * 
+ * Entity Car class : Lightweight persistence domain object. Represents a table in 
+ * a relational database, and each entity instance corresponds to a row in that table. 
+ * The persistent state of an entity is represented through either persistent fields or persistent 
+ * properties. These fields or properties use object/relational mapping annotations to map the entities
+ *  and entity relationships to the relational data in the underlying data store.
+ *
+ */
 @Entity
 @Table
 public class Car {
@@ -101,5 +111,13 @@ public class Car {
 	public void setLastUpdated(Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
+
+	@Override
+	public String toString() {
+		return "Car [id= " + id + ", brand= " + brand + ", registration= " + registration + ", country= " + country
+				+ ", createdAt= " + createdAt + ", lastUpdated= " + lastUpdated + "]";
+	}
+	
+	
 	
 }

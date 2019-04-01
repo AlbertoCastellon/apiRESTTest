@@ -9,6 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+/**
+ * A class to setup the Logger and it's formatters and handlers
+ *
+ */
 public class MyLogger {
 
 	private static FileHandler fileTxt;
@@ -16,17 +20,17 @@ public class MyLogger {
 
 	private static FileHandler fileHTML;
 	private static Formatter formatterHTML;
-
+	
+	/**
+	 * get the global logger to configure it, suppress the logging output to the console, 
+	 * sets the logger level to INFO, creates a TXT and a HTML formatter 
+	 * @throws IOException in case there is some error with the file creation/reading/writing
+	 */
+	
 	public static void setup() throws IOException {
-
-		/**
-		 * get the global logger to configure it
-		 */
+		
 		Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
-		/**
-		 * suppress the logging output to the console
-		 */
 		Logger rootLogger = Logger.getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();
 		if (handlers[0] instanceof ConsoleHandler) {
@@ -37,18 +41,13 @@ public class MyLogger {
 		fileTxt = new FileHandler("Logging.txt");
 		fileHTML = new FileHandler("Logging.html");
 
-		/**
-		 * create a TXT formatter
-		 */
 		formatterTxt = new SimpleFormatter();
 		fileTxt.setFormatter(formatterTxt);
 		logger.addHandler(fileTxt);
 
-		/**
-		 * create an HTML formatter
-		 */
 		formatterHTML = new MyHtmlFormatter();
 		fileHTML.setFormatter(formatterHTML);
 		logger.addHandler(fileHTML);
+		
 	}
 }

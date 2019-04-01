@@ -10,7 +10,6 @@ import java.util.logging.LogRecord;
 /**
  * this custom formatter formats parts of a log record to a single line
  * 
- *
  */
 class MyHtmlFormatter extends Formatter {
 	
@@ -46,6 +45,11 @@ class MyHtmlFormatter extends Formatter {
         return buf.toString();
     }
 
+    /**
+     * formats the milis introduced to a Date format
+     * @param millisecs
+     * @return String with the Date
+     */
     private String calcDate(long millisecs) {
         SimpleDateFormat date_format = new SimpleDateFormat("MMM dd,yyyy HH:mm");
         Date resultdate = new Date(millisecs);
@@ -77,6 +81,7 @@ class MyHtmlFormatter extends Formatter {
     /**
      * this method is called just after the handler using this
      * formatter is closed
+     * 
      */
     public String getTail(Handler h) {
         return "</table>\n</body>\n</html>";

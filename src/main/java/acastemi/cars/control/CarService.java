@@ -1,6 +1,7 @@
 package acastemi.cars.control;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -15,6 +16,8 @@ import acastemi.cars.entity.Car;
 @Stateless
 public class CarService {
 	
+	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 	/**
 	 * The entity manager object that it's injected by the container and created 
 	 * by the Persistence Unit JPA_PU.
@@ -24,10 +27,13 @@ public class CarService {
 	private EntityManager em;
 	/**
 	 * Creates a query to retrieve all the Car objects from the database
-	 * @return List of Car objects
+	 * @return List of Car objects, empty array if there is none
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Car> getCars() {
+		
+		LOGGER.info("Getting all the cars from the database");
+		
 		return (List<Car>) em.createQuery("SELECT c FROM Car c").getResultList();
 	}
 
@@ -39,6 +45,9 @@ public class CarService {
 	 * @return the found Car object
 	 */
 	public Car getCar(final int carId) {
+
+		LOGGER.info("Getting a car from the database");
+		
 		return em.find(Car.class, carId);
 	}
 	
@@ -50,6 +59,7 @@ public class CarService {
 	 */
 	public Car createCar(final Car car) {
 
+		LOGGER.info("Creating the car " + car + "in the database");
 		em.persist(car);
 
 		return car;
@@ -67,12 +77,14 @@ public class CarService {
 		updatedCar.setId(carId);
 		
 		if(em.find(Car.class, carId) != null) {
+			LOGGER.info("Updating a car in the database");
 			em.merge(updatedCar);
 			return updatedCar;
 		}
-		else
+		else {
+			LOGGER.info("Failed to find the car with the id " + carId + " in the database.");
 			return null;
-		
+		}
 
 	}
 
@@ -80,17 +92,21 @@ public class CarService {
 	 * 
 	 * @param carId The id of the car that needs to be deleted
 	 * @return a boolean that tells if the delete operation was successful 
+	 * 
 	 */
 	public boolean deleteCar(final int carId) {
 		
 		Car car = em.find(Car.class, carId);
 		
 		if(car!=null) {
+			LOGGER.info("Deleting the car: " + car + " from the database");
 			em.remove(car);
 			return true;
 		}
-		else
+		else {
+			LOGGER.info("Failed to find the car with the id " + carId + " in the database.");
 			return false;
+		}
 		
 	}
 
