@@ -2,7 +2,7 @@ package acastemi.cars.rest;
 
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
+
 
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -15,6 +15,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.apache.log4j.Logger;
 
 import acastemi.cars.control.CarService;
 import acastemi.cars.entity.Car;
@@ -38,7 +40,7 @@ public class CarResource {
 	@EJB
 	private CarService carSvc;
 	
-	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	private final static Logger LOGGER = Logger.getLogger(CarService.class);
 
 	
 	/**

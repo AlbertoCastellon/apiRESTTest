@@ -2,12 +2,15 @@ package acastemi.cars.util;
 
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+
+import org.apache.log4j.Logger;
+
+import acastemi.cars.control.CarService;
 
 /**
  * Validates objects against the restrictions put in the Bean validations
@@ -18,7 +21,7 @@ public class ValidatorUtil {
 	private static ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 	private static Validator validator = factory.getValidator();
 	
-	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	private final static Logger LOGGER = Logger.getLogger(CarService.class);
 
 	/**
 	 * Validates an object against the restrictions put in the Bean validations
