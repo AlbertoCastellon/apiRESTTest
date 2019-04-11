@@ -81,7 +81,6 @@ class MyHtmlFormatter extends Formatter {
     /**
      * this method is called just after the handler using this
      * formatter is closed
-     * 
      */
     public String getTail(Handler h) {
         return "</table>\n</body>\n</html>";

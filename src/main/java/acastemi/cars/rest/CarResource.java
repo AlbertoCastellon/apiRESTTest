@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import acastemi.cars.control.CarService;
+import acastemi.cars.control.PersistenceService;
 import acastemi.cars.entity.Car;
 import acastemi.cars.util.ValidatorUtil;
 
@@ -44,12 +45,12 @@ public class CarResource {
 
 	
 	/**
-	 * The Java method will process HTTP GET request and call {@link acastemi.cars.control.CarService#getCars() getCars()}
+	 * The Java method will process HTTP GET request and call {@link acastemi.cars.control.CarService#getAll() getCars()}
 	 * @return Response object containing an array of Car objects
 	 */
 	@GET
 	public Response findAllCars() {
-		return Response.ok(carSvc.getCars(), MediaType.APPLICATION_JSON).build();
+		return Response.ok(carSvc.getAll(), MediaType.APPLICATION_JSON).build();
 	}
 
 	
@@ -63,7 +64,7 @@ public class CarResource {
 	@Path("{carId}")
 	public Response findCar(@PathParam("carId") final int carId) {
 
-		final Car car = carSvc.getCar(carId);
+		final Car car = (Car) carSvc.get(carId);
 		
 		if(car==null) {
 			
@@ -100,7 +101,7 @@ public class CarResource {
 					.build();
 			
 		}
-		return Response.ok(carSvc.createCar(carRequest)).build();
+		return Response.accepted((carSvc.create(carRequest))).build();
 
 	}
 	
@@ -125,7 +126,7 @@ public class CarResource {
 					.build();
 		}
 		
-		final Car car = carSvc.updateCar(carRequest, carId);
+		final Car car = (Car) carSvc.update(carRequest, carId);
 		
 		if(car==null)
 			return Response.status(400).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
@@ -146,7 +147,7 @@ public class CarResource {
 	@Path("{carId}")
 	public Response deleteCar(@PathParam("carId") final int carId) {
 		
-		if(carSvc.deleteCar(carId))
+		if(carSvc.delete(carId))
 			return Response.noContent().build();
 		else
 			return Response.status(400).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")

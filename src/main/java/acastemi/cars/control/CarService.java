@@ -1,12 +1,8 @@
 package acastemi.cars.control;
 
 import java.util.List;
-import org.apache.log4j.Logger;
-
 
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import acastemi.cars.entity.Car;
 
@@ -15,27 +11,19 @@ import acastemi.cars.entity.Car;
  *
  */
 @Stateless
-public class CarService {
+public class CarService extends PersistenceService {
 	
-	private final static Logger LOGGER = Logger.getLogger(CarService.class);
-	
-	/**
-	 * The entity manager object that it's injected by the container and created 
-	 * by the Persistence Unit JPA_PU.
-	 * All the transactions will be managed automatically.
-	 */
-	@PersistenceContext(unitName = "em_payara")
-	private EntityManager em;
 	/**
 	 * Creates a query to retrieve all the Car objects from the database
 	 * @return List of Car objects, empty array if there is none
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
-	public List<Car> getCars() {
+	public List<Object> getAll() {
 		
 		LOGGER.info("Getting all the cars from the database");
 		
-		return (List<Car>) em.createQuery("SELECT c FROM Car c").getResultList();
+		return (List<Object>) em.createQuery("SELECT c FROM Car c").getResultList();
 	}
 
 	
@@ -45,11 +33,12 @@ public class CarService {
 	 * @param carId The id of the car that needs to be updated
 	 * @return the found Car object
 	 */
-	public Car getCar(final int carId) {
+	@Override
+	public Object get(final int id) {
 
 		LOGGER.info("Getting a car from the database");
 		
-		return em.find(Car.class, carId);
+		return em.find(Car.class, id);
 	}
 	
 	/**
@@ -58,9 +47,10 @@ public class CarService {
 	 * @return The object inserted in the database
 	 * 
 	 */
-	public Car createCar(final Car car) {
+	@Override
+	public Object create(final Object car) {
 
-		LOGGER.info("Creating the car "+ car.toString2() +" in the database");
+		LOGGER.info("Creating the car "+ ((Car) car).toString2() +" in the database");
 		em.persist(car);
 
 		return car;
@@ -73,9 +63,10 @@ public class CarService {
 	 * @return The updated Car object from the database
 	 * 
 	 */
-	public Car updateCar(final Car updatedCar, int carId) {
+	@Override
+	public Object update(final Object updatedCar, int carId) {
 		
-		updatedCar.setId(carId);
+		((Car) updatedCar).setId(carId);
 		
 		if(em.find(Car.class, carId) != null) {
 			LOGGER.info("Updating a car in the database");
@@ -95,7 +86,8 @@ public class CarService {
 	 * @return a boolean that tells if the delete operation was successful 
 	 * 
 	 */
-	public boolean deleteCar(final int carId) {
+	@Override
+	public boolean delete(final int carId) {
 		
 		Car car = em.find(Car.class, carId);
 		
@@ -110,5 +102,6 @@ public class CarService {
 		}
 		
 	}
+
 
 }
