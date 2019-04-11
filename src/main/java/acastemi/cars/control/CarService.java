@@ -1,12 +1,11 @@
 package acastemi.cars.control;
 
 import java.util.List;
-import org.apache.log4j.Logger;
 
-
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+
+import org.apache.log4j.Logger;
 
 import acastemi.cars.entity.Car;
 
@@ -17,25 +16,21 @@ import acastemi.cars.entity.Car;
 @Stateless
 public class CarService {
 	
-	private final static Logger LOGGER = Logger.getLogger(CarService.class);
+    private final static Logger LOGGER = Logger.getLogger(CarService.class);
 	
-	/**
-	 * The entity manager object that it's injected by the container and created 
-	 * by the Persistence Unit JPA_PU.
-	 * All the transactions will be managed automatically.
-	 */
-	@PersistenceContext(unitName = "em_payara")
-	private EntityManager em;
+	@EJB
+	PersistenceService persistenceService = new PersistenceService();
+	
 	/**
 	 * Creates a query to retrieve all the Car objects from the database
 	 * @return List of Car objects, empty array if there is none
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Car> getCars() {
+	public List<Car> getAll() {
 		
 		LOGGER.info("Getting all the cars from the database");
 		
-		return (List<Car>) em.createQuery("SELECT c FROM Car c").getResultList();
+		return persistenceService.findAll(Car.class);
 	}
 
 	
@@ -45,11 +40,12 @@ public class CarService {
 	 * @param carId The id of the car that needs to be updated
 	 * @return the found Car object
 	 */
-	public Car getCar(final int carId) {
+	
+	public Car get(final int id) {
 
 		LOGGER.info("Getting a car from the database");
 		
-		return em.find(Car.class, carId);
+		return persistenceService.find(Car.class, id);
 	}
 	
 	/**
@@ -58,10 +54,10 @@ public class CarService {
 	 * @return The object inserted in the database
 	 * 
 	 */
-	public Car createCar(final Car car) {
+	public Car create(final Car car) {
 
-		LOGGER.info("Creating the car "+ car.toString2() +" in the database");
-		em.persist(car);
+		LOGGER.info("Creating the car "+  car.toString2() +" in the database");
+		persistenceService.create(car);
 
 		return car;
 	}
@@ -73,13 +69,13 @@ public class CarService {
 	 * @return The updated Car object from the database
 	 * 
 	 */
-	public Car updateCar(final Car updatedCar, int carId) {
+	public Car update(final Car updatedCar, int carId) {
 		
 		updatedCar.setId(carId);
 		
-		if(em.find(Car.class, carId) != null) {
+		if(persistenceService.find(Car.class, carId) != null) {
 			LOGGER.info("Updating a car in the database");
-			em.merge(updatedCar);
+			persistenceService.update(updatedCar);
 			return updatedCar;
 		}
 		else {
@@ -95,13 +91,13 @@ public class CarService {
 	 * @return a boolean that tells if the delete operation was successful 
 	 * 
 	 */
-	public boolean deleteCar(final int carId) {
+	public boolean delete(final int carId) {
 		
-		Car car = em.find(Car.class, carId);
+		Car car = persistenceService.find(Car.class, carId);
 		
 		if(car!=null) {
 			LOGGER.info("Deleting the car: " + car + " from the database");
-			em.remove(car);
+			persistenceService.delete(carId);
 			return true;
 		}
 		else {
@@ -110,5 +106,6 @@ public class CarService {
 		}
 		
 	}
+
 
 }
