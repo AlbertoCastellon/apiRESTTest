@@ -2,12 +2,13 @@ package acastemi.cars.control;
 
 import java.util.List;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
-import org.apache.log4j.Logger;
-
-public abstract class PersistenceService {
+@Stateless
+public class PersistenceService {
 	
 	/**
 	 * The entity manager object that it's injected by the container and created 
@@ -17,21 +18,39 @@ public abstract class PersistenceService {
 	@PersistenceContext(unitName = "em_payara")
 	protected EntityManager em;
 
-	public PersistenceService() {
-		super();
+	
+	public void delete(final int id) {
+		
+		em.remove(id);
+		
 	}
 
-	protected static final Logger LOGGER = Logger.getLogger(CarService.class);
+	public <T> T update(final T t) {
 
-	public abstract boolean delete(final int id);
+		em.merge(t);
+		return t;
 
-	public abstract Object update(final Object updated, int id);
+	}
 
-	public abstract Object create(final Object object);
+	public <T> T create(final T t) {
 
-	public abstract Object get(final int id);
+		em.persist(t);
 
-	public abstract List<Object> getAll();
+		return t;
+	}
+
+	public <T> T find(final Class<T> type, final int id) {
+		
+		  return em.find(type, id);
+		  
+		} 
+
+	public <T> List<T> findAll(final Class<T> type) {
+        final String className = type.getName();
+        final TypedQuery<T> query = em
+                .createQuery("SELECT data FROM " + className + " data", type);
+        return query.getResultList();
+    } 
 
 
 }

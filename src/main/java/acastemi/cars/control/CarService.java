@@ -2,7 +2,10 @@ package acastemi.cars.control;
 
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
+
+import org.apache.log4j.Logger;
 
 import acastemi.cars.entity.Car;
 
@@ -11,19 +14,23 @@ import acastemi.cars.entity.Car;
  *
  */
 @Stateless
-public class CarService extends PersistenceService {
+public class CarService {
+	
+    private final static Logger LOGGER = Logger.getLogger(CarService.class);
+	
+	@EJB
+	PersistenceService persistenceService = new PersistenceService();
 	
 	/**
 	 * Creates a query to retrieve all the Car objects from the database
 	 * @return List of Car objects, empty array if there is none
 	 */
-	@Override
 	@SuppressWarnings("unchecked")
-	public List<Object> getAll() {
+	public List<Car> getAll() {
 		
 		LOGGER.info("Getting all the cars from the database");
 		
-		return (List<Object>) em.createQuery("SELECT c FROM Car c").getResultList();
+		return persistenceService.findAll(Car.class);
 	}
 
 	
@@ -33,12 +40,12 @@ public class CarService extends PersistenceService {
 	 * @param carId The id of the car that needs to be updated
 	 * @return the found Car object
 	 */
-	@Override
-	public Object get(final int id) {
+	
+	public Car get(final int id) {
 
 		LOGGER.info("Getting a car from the database");
 		
-		return em.find(Car.class, id);
+		return persistenceService.find(Car.class, id);
 	}
 	
 	/**
@@ -47,11 +54,10 @@ public class CarService extends PersistenceService {
 	 * @return The object inserted in the database
 	 * 
 	 */
-	@Override
-	public Object create(final Object car) {
+	public Car create(final Car car) {
 
-		LOGGER.info("Creating the car "+ ((Car) car).toString2() +" in the database");
-		em.persist(car);
+		LOGGER.info("Creating the car "+  car.toString2() +" in the database");
+		persistenceService.create(car);
 
 		return car;
 	}
@@ -63,14 +69,13 @@ public class CarService extends PersistenceService {
 	 * @return The updated Car object from the database
 	 * 
 	 */
-	@Override
-	public Object update(final Object updatedCar, int carId) {
+	public Car update(final Car updatedCar, int carId) {
 		
-		((Car) updatedCar).setId(carId);
+		updatedCar.setId(carId);
 		
-		if(em.find(Car.class, carId) != null) {
+		if(persistenceService.find(Car.class, carId) != null) {
 			LOGGER.info("Updating a car in the database");
-			em.merge(updatedCar);
+			persistenceService.update(updatedCar);
 			return updatedCar;
 		}
 		else {
@@ -86,14 +91,13 @@ public class CarService extends PersistenceService {
 	 * @return a boolean that tells if the delete operation was successful 
 	 * 
 	 */
-	@Override
 	public boolean delete(final int carId) {
 		
-		Car car = em.find(Car.class, carId);
+		Car car = persistenceService.find(Car.class, carId);
 		
 		if(car!=null) {
 			LOGGER.info("Deleting the car: " + car + " from the database");
-			em.remove(car);
+			persistenceService.delete(carId);
 			return true;
 		}
 		else {
