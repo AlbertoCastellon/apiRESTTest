@@ -97,7 +97,7 @@ public class CarService {
 		
 		if(car!=null) {
 			LOGGER.info("Deleting the car: " + car + " from the database");
-			persistenceService.delete(carId);
+			persistenceService.delete(car);
 			return true;
 		}
 		else {
