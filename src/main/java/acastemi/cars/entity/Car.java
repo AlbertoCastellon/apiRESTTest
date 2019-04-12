@@ -3,11 +3,14 @@ package acastemi.cars.entity;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -29,23 +32,23 @@ import javax.validation.constraints.Size;
 public class Car {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
 	
-	@Column(name = "brand", nullable=false, length=50)
+	@JoinColumn(name = "brand", nullable=false)
 	@NotNull(message="Brand cannot be empty.")
-	@Size(min=3, max=50, message="The size must be between 3 and 50 characters")
-	private String brand;
+	@ManyToOne(cascade = CascadeType.PERSIST)
+	private Brand brand;
 	
 	@Column(name = "registration", nullable=false)
 	@NotNull(message="Registration cannot be empty.")
 	private Timestamp registration;
 	
-	@Column(name = "country", nullable=false, length=50)
-	@Size(min=3, max=30, message="The size must be between 3 and 50 characters")
+	@JoinColumn(name = "country", nullable=false)
 	@NotNull(message="Country may not be empty.")
-	private String country;
+	@ManyToOne(cascade = CascadeType.PERSIST)
+	private Country country;
 	
 	@Column(name = "createdAt", updatable=false)
 	private Date createdAt;
@@ -72,11 +75,11 @@ public class Car {
 		this.id = id;
 	}
 
-	public String getBrand() {
+	public Brand getBrand() {
 		return brand;
 	}
 
-	public void setBrand(String brand) {
+	public void setBrand(Brand brand) {
 		this.brand = brand;
 	}
 
@@ -88,11 +91,11 @@ public class Car {
 		this.registration = registration;
 	}
 
-	public String getCountry() {
+	public Country getCountry() {
 		return country;
 	}
 
-	public void setCountry(String country) {
+	public void setCountry(Country country) {
 		this.country = country;
 	}
 
