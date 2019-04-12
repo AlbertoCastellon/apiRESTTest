@@ -19,7 +19,7 @@ public class CarService {
     private final static Logger LOGGER = Logger.getLogger(CarService.class);
 	
 	@EJB
-	PersistenceService persistenceService = new PersistenceService();
+	PersistenceService persistenceService;
 	
 	/**
 	 * Creates a query to retrieve all the Car objects from the database
