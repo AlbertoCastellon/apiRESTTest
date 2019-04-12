@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import acastemi.cars.entity.Car;
+
 @Stateless
 public class PersistenceService {
 	
@@ -19,9 +21,9 @@ public class PersistenceService {
 	protected EntityManager em;
 
 	
-	public void delete(final int id) {
+	public void delete(final Car car) {
 		
-		em.remove(id);
+		em.remove(car);
 		
 	}
 
@@ -46,10 +48,12 @@ public class PersistenceService {
 		} 
 
 	public <T> List<T> findAll(final Class<T> type) {
+		
         final String className = type.getName();
         final TypedQuery<T> query = em
                 .createQuery("SELECT data FROM " + className + " data", type);
         return query.getResultList();
+        
     } 
 
 

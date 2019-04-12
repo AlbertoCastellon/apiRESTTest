@@ -22,6 +22,11 @@ import acastemi.cars.control.CarService;
 import acastemi.cars.control.PersistenceService;
 import acastemi.cars.entity.Car;
 import acastemi.cars.util.ValidatorUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ApiResponse;
 
 /**
  * The Java class will be hosted at the URI path "/cars"
@@ -31,6 +36,7 @@ import acastemi.cars.util.ValidatorUtil;
  *
  */
 @Path("/cars")
+@Api(value="cars", consumes="application/json", produces="application/json")
 @Consumes(value = MediaType.APPLICATION_JSON)
 @Produces(value = MediaType.APPLICATION_JSON)
 public class CarResource {
@@ -49,6 +55,9 @@ public class CarResource {
 	 * @return Response object containing an array of Car objects
 	 */
 	@GET
+	@ApiOperation(value = "Retrieve all the cars in the system",
+	    response = Car.class,
+	    responseContainer = "List")
 	public Response findAllCars() {
 		return Response.ok(carSvc.getAll(), MediaType.APPLICATION_JSON).build();
 	}
@@ -61,8 +70,14 @@ public class CarResource {
 	 * @return Response object containing a single Car object, or an error if the Car object doesn't exists
 	 */
 	@GET
+	@ApiOperation(value = "Retrieve a car from the system",
+    response = Car.class)
+	@ApiResponses(value = { 
+		      @ApiResponse(code = 400, message = "Validation error", 
+		                    response = Boolean.class),
+		      @ApiResponse(code = 404, message = "{\"error\": \"The car with the id {carId} does not exist.\"}") })
 	@Path("{carId}")
-	public Response findCar(@PathParam("carId") final int carId) {
+	public Response findCar(@ApiParam(value = "id of the car that needs to be retrieved", required = true) @PathParam("carId") final int carId) {
 
 		final Car car = (Car) carSvc.get(carId);
 		
@@ -88,6 +103,12 @@ public class CarResource {
 	 * @return the Car Object successfully created 
 	 */
 	@POST
+	@ApiOperation(value = "Creates a new car in the system",
+    response = Car.class)
+	@ApiResponses(value = { 
+		      @ApiResponse(code = 400, message = "Validation error", 
+		                    response = Boolean.class),
+		      @ApiResponse(code = 404, message = "{\"error\": \"The car with the id {carId} does not exist.\"}") })
 	public Response createCar(final Car carRequest) {
 		
 		final ArrayList<String> validationsErrors = ValidatorUtil.validate(carRequest);
@@ -112,8 +133,14 @@ public class CarResource {
 	 * @return the Car Object successfully created 
 	 */
 	@PUT
+	@ApiOperation(value = "Modifies a car in the system",
+    response = Car.class)
+	@ApiResponses(value = { 
+		      @ApiResponse(code = 400, message = "Validation error", 
+		                    response = Boolean.class),
+		      @ApiResponse(code = 404, message = "{\"error\": \"The car with the id {carId} does not exist.\"}") })
 	@Path("{carId}")
-	public Response updateCar(final Car carRequest, @PathParam("carId") final int carId) {
+	public Response updateCar(final Car carRequest, @ApiParam(value = "id of the car that needs to be modified", required = true) @PathParam("carId") final int carId) {
 		
 		final ArrayList<String> validationsErrors = ValidatorUtil.validate(carRequest);
 		
@@ -144,8 +171,13 @@ public class CarResource {
 	 * error if the Car object doesn't exists
 	 */
 	@DELETE
+	@ApiOperation(value = "Deletes a car in the system")
+	@ApiResponses(value = { 
+		      @ApiResponse(code = 400, message = "Validation error", 
+		                    response = Boolean.class),
+		      @ApiResponse(code = 404, message = "{\"error\": \"The car with the id {carId} does not exist.\"}") })
 	@Path("{carId}")
-	public Response deleteCar(@PathParam("carId") final int carId) {
+	public Response deleteCar(@ApiParam(value = "id of the car that needs to be deleted", required = true)  @PathParam("carId") final int carId) {
 		
 		if(carSvc.delete(carId))
 			return Response.noContent().build();
