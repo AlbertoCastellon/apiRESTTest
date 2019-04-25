@@ -29,8 +29,8 @@ public class PersistenceService {
 
 	public <T> T update(final T t) {
 
-		em.merge(t);
-		return t;
+		
+		return em.merge(t);
 
 	}
 

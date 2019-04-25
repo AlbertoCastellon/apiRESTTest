@@ -25,7 +25,6 @@ public class CarService {
 	 * Creates a query to retrieve all the Car objects from the database
 	 * @return List of Car objects, empty array if there is none
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Car> getAll() {
 		
 		LOGGER.info("Getting all the cars from the database");
@@ -57,9 +56,8 @@ public class CarService {
 	public Car create(final Car car) {
 
 		LOGGER.info("Creating the car "+  car.toString2() +" in the database");
-		persistenceService.create(car);
-
-		return car;
+		
+		return persistenceService.create(car);
 	}
 
 	/**

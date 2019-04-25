@@ -45,7 +45,7 @@ public class CarResource {
 	 * Initializes the Enterprise Java Bean
 	 */
 	@EJB
-	private CarService carSvc;
+	protected CarService carSvc;
 	
 	private final static Logger LOGGER = Logger.getLogger(CarService.class);
 
@@ -111,7 +111,7 @@ public class CarResource {
 		      @ApiResponse(code = 404, message = "{\"error\": \"The car with the id {carId} does not exist.\"}") })
 	public Response createCar(final Car carRequest) {
 		
-		final ArrayList<String> validationsErrors = ValidatorUtil.validate(carRequest);
+		ArrayList<String> validationsErrors = ValidatorUtil.validate(carRequest);
 		
 		if(!validationsErrors.isEmpty()) { 
 			
