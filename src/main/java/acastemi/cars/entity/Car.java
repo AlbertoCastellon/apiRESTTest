@@ -67,6 +67,20 @@ public class Car {
 		lastUpdated = new Date();
 	}
 
+	public Car() {
+		
+	};
+	
+	public Car(int id, Brand brand, Timestamp registration, Country country, Date createdAt, Date lastUpdated) {
+		super();
+		this.id = id;
+		this.brand = brand;
+		this.registration = registration;
+		this.country = country;
+		this.createdAt = createdAt;
+		this.lastUpdated = lastUpdated;
+	}
+
 	public int getId() {
 		return id;
 	}

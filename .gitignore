@@ -4,3 +4,4 @@ target/
 .project
 bin/
 doc/
+log4j-application.log

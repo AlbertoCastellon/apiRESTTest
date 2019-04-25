@@ -27,6 +27,15 @@ public class Country {
 	public Country() {
 		super();
 	}   
+	
+	
+	public Country(int id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
+
+
 	public int getId() {
 		return this.id;
 	}
