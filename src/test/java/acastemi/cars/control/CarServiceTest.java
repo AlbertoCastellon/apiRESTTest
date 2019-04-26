@@ -11,50 +11,30 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+
 import acastemi.cars.entity.Car;
 
 class CarServiceTest {
 
+	@InjectMocks
 	private CarService carService;
+	
+	@Mock
+	PersistenceService persistenceService;
 
-	@BeforeEach
-	void setUp() throws Exception {
-
-		carService = new CarService();
-		carService.persistenceService = mock(PersistenceService.class);
-
-	}
 
 	@Test
 	final void testGetAll() {
 
 		List<Car> cars = new ArrayList<>();
 
-		when(carService.persistenceService.findAll(Car.class)).thenReturn(cars);
+		when(persistenceService.findAll(Car.class)).thenReturn(cars);
 
-		cars = carService.getAll();
+		verify(persistenceService).findAll(Car.class);
 
-		verify(carService.persistenceService).findAll(Car.class);
-
-		assertTrue(carService.getAll() instanceof List<?>);
-
-//		List<Car> cars = new ArrayList<>();       
-//
-//        when(carService.persistenceService.findAll(Car.class)).thenReturn(cars);
-//        
-//        cars = carService.getAll();
-//
-//        assertEquals(cars.size(), 0);
-//        
-//        
-//        
-//        Car car = mock(Car.class);
-//
-//        cars.add(car);
-//        
-//        cars = carService.getAll();
-//
-//        assertEquals(cars.size(), 1);
+		assertEquals(cars, carService.getAll());
 
 	}
 
@@ -64,11 +44,11 @@ class CarServiceTest {
 		Car car = new Car();
 		car.setId(8);
 
-		when(carService.persistenceService.find(Car.class, car.getId())).thenReturn(car);
+		when(persistenceService.find(Car.class, car.getId())).thenReturn(car);
 
 		Object returnedCar = carService.get(car.getId());
 
-		verify(carService.persistenceService).find(Car.class, car.getId());
+		verify(persistenceService).find(Car.class, car.getId());
 
 		assertTrue(returnedCar instanceof Car);
 
