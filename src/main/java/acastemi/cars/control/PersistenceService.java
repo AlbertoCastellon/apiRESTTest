@@ -7,6 +7,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.hamcrest.core.IsNull;
+
+import acastemi.cars.control.PersistenceService.EntityNotFoundException;
 import acastemi.cars.entity.Car;
 
 @Stateless
@@ -41,11 +44,17 @@ public class PersistenceService {
 		return t;
 	}
 
-	public <T> T find(final Class<T> type, final int id) {
+	public <T> T find(final Class<T> type, final int id) throws EntityNotFoundException {
 		
-		  return em.find(type, id);
+		T t = em.find(type, id);
+		
+		if(t==null)
+		  throw new EntityNotFoundException();
+		else {
+			return t;
+		}
 		  
-		} 
+	} 
 
 	public <T> List<T> findAll(final Class<T> type) {
 		
@@ -55,6 +64,12 @@ public class PersistenceService {
         return query.getResultList();
         
     } 
+	
+	public class EntityNotFoundException extends Exception { 
+	    public EntityNotFoundException() {
+	        super("The entity does not exist.");
+	    }
+	}
 
 
 }

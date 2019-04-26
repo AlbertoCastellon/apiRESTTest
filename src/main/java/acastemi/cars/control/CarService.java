@@ -7,6 +7,7 @@ import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 
+import acastemi.cars.control.PersistenceService.EntityNotFoundException;
 import acastemi.cars.entity.Car;
 
 /**
@@ -38,9 +39,10 @@ public class CarService {
 	 * 
 	 * @param carId The id of the car that needs to be updated
 	 * @return the found Car object
+	 * @throws EntityNotFoundException 
 	 */
 	
-	public Car get(final int id) {
+	public Car get(final int id) throws EntityNotFoundException {
 
 		LOGGER.info("Getting a car from the database");
 		
@@ -65,21 +67,19 @@ public class CarService {
 	 * @param updatedCar The car object that needs to be updated with the new values
 	 * @param carId The id of the car that needs to be updated
 	 * @return The updated Car object from the database
+	 * @throws EntityNotFoundException 
 	 * 
 	 */
-	public Car update(final Car updatedCar, int carId) {
+	public Car update(final Car updatedCar, int carId) throws EntityNotFoundException {
+		
+		persistenceService.find(Car.class, carId);
 		
 		updatedCar.setId(carId);
 		
-		if(persistenceService.find(Car.class, carId) != null) {
-			LOGGER.info("Updating a car in the database");
-			persistenceService.update(updatedCar);
-			return updatedCar;
-		}
-		else {
-			LOGGER.info("Failed to find the car with the id " + carId + " in the database.");
-			return null;
-		}
+		LOGGER.info("Updating a car in the database");
+
+		return persistenceService.update(updatedCar);
+
 
 	}
 
@@ -87,21 +87,18 @@ public class CarService {
 	 * 
 	 * @param carId The id of the car that needs to be deleted
 	 * @return a boolean that tells if the delete operation was successful 
+	 * @throws EntityNotFoundException 
 	 * 
 	 */
-	public boolean delete(final int carId) {
+	public void delete(final int carId) throws EntityNotFoundException {
 		
 		Car car = persistenceService.find(Car.class, carId);
 		
-		if(car!=null) {
-			LOGGER.info("Deleting the car: " + car + " from the database");
-			persistenceService.delete(car);
-			return true;
-		}
-		else {
-			LOGGER.info("Failed to find the car with the id " + carId + " in the database.");
-			return false;
-		}
+		LOGGER.info("Deleting the car: " + car + " from the database");
+		
+		persistenceService.delete(car);
+		
+		
 		
 	}
 
