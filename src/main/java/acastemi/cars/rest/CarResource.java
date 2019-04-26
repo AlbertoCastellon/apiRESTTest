@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 
 import acastemi.cars.control.CarService;
 import acastemi.cars.control.PersistenceService;
+import acastemi.cars.control.PersistenceService.EntityNotFoundException;
 import acastemi.cars.entity.Car;
 import acastemi.cars.util.ValidatorUtil;
 import io.swagger.annotations.Api;
@@ -79,21 +80,22 @@ public class CarResource {
 	@Path("{carId}")
 	public Response findCar(@ApiParam(value = "id of the car that needs to be retrieved", required = true) @PathParam("carId") final int carId) {
 
-		final Car car = (Car) carSvc.get(carId);
-		
-		if(car==null) {
+		Car car;
+		try {
+			
+			car = (Car) carSvc.get(carId);
+			LOGGER.info("The car " + car + " was found in the database.");
+			
+			return Response.ok(car, MediaType.APPLICATION_JSON).build();
+			
+		} catch (EntityNotFoundException e) {
 			
 			LOGGER.info("Failed to find the car with the id " + carId + " in the database.");
 			return Response.status(404).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
 			.build();
 			
-		}else {
-			
-			LOGGER.info("The car " + car + " was found in the database.");
-			
-			return Response.ok(car, MediaType.APPLICATION_JSON).build();
-			
 		}
+		
 
 	}
 	
@@ -153,13 +155,14 @@ public class CarResource {
 					.build();
 		}
 		
-		final Car car = (Car) carSvc.update(carRequest, carId);
-		
-		if(car==null)
-			return Response.status(400).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
-			.build();
-		else 
+		Car car;
+		try {
+			car = carSvc.update(carRequest, carId);
 			return Response.ok(car, MediaType.APPLICATION_JSON).build();
+		} catch (EntityNotFoundException e) {
+			return Response.status(400).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
+					.build();
+		}
 		
 		
 	}
@@ -179,11 +182,19 @@ public class CarResource {
 	@Path("{carId}")
 	public Response deleteCar(@ApiParam(value = "id of the car that needs to be deleted", required = true)  @PathParam("carId") final int carId) {
 		
-		if(carSvc.delete(carId))
+		try {
+			
+			carSvc.delete(carId);
+			
 			return Response.noContent().build();
-		else
+			
+		}catch (EntityNotFoundException e) {			
+			
 			return Response.status(400).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
-				.build();
+					.build();	
+			
+		}
+					
 		
 	}
 
