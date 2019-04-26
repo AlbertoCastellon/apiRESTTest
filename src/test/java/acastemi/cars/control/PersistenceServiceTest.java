@@ -88,31 +88,28 @@ class PersistenceServiceTest {
         
 	}
 
-	@Disabled
+	
 	@Test
 	final <T> void testFindAll() {
 		
-		List<Object> cars = new ArrayList<>();
-
+		List<Object> carsObject = new ArrayList<>();
+		
         Car car = mock(Car.class);
         when(car.getId()).thenReturn(8);
 
-        cars.add(car);       
+        carsObject.add(car);
         
         TypedQuery<Object> mockedQuery = mock(TypedQuery.class);
         
         when(this.persistenceService.em.createQuery(anyString(), any())).thenReturn(mockedQuery);
-        when(mockedQuery.getResultList()).thenReturn(cars);
-               
-//        Query mockedQuery = mock(Query.class);
-//        when(mockedQuery.getResultList()).thenReturn(cars);
-//        when(mockedQuery.setParameter(
-//                anyString(), anyObject())
-//        ).thenReturn(mockedQuery);
+        when(mockedQuery.getResultList()).thenReturn(carsObject);
         
-        cars = this.persistenceService.findAll(Car.class);
+        
+        List<Car> cars = this.persistenceService.findAll(Car.class);
 
         assertEquals(cars.size(), 1);
+        
+        assertEquals(carsObject, cars);
         
 	}
 
