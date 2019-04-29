@@ -1,115 +1,130 @@
 package acastemi.cars.control;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import org.junit.Ignore;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.mockito.Matchers;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+
 
 import acastemi.cars.entity.Car;
+import acastemi.cars.util.EntityNotFoundException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class PersistenceServiceTest {
+public class PersistenceServiceTest {
 
 	private static final int ID = 1;
+	
+	@InjectMocks
 	private PersistenceService persistenceService;
-
-	@BeforeEach
-	void setUp() throws Exception {
-		
-		this.persistenceService = new PersistenceService(); 
-        this.persistenceService.em = mock(EntityManager.class);
-	}
-
-	@Test
-	final void testDelete() {
-		
-		Car car = new Car();
-        
-        doNothing().when(this.persistenceService.em).remove(Matchers.anyObject());
-
-        this.persistenceService.delete(car);
-
-        verify(this.persistenceService.em).remove(car);
-        
-	}
+	
+	@Mock
+	EntityManager em;
+	
+	@Rule public MockitoRule mockitoRule = MockitoJUnit.rule(); 
+	
 
 	@Test
-	final void testUpdate() {
+	final public void testDelete() {
 		
-		Car car = new Car();
-
-		when(this.persistenceService.em.merge(Matchers.anyObject()))
-        .thenReturn(car);
+		Car car = mock(Car.class);
         
-        Car returnedCar = this.persistenceService.em.merge(car);
+        doNothing().when(em).remove(any());
 
-        verify(this.persistenceService.em).merge(car);
-        
-        assertEquals(car, returnedCar);
-	}
+        persistenceService.delete(car);
 
-	@Test
-	final void testCreate() {
-		
-		Car car = new Car();
-
-        doNothing().when(this.persistenceService.em).persist(anyObject());
-
-        Car returnedCar = this.persistenceService.create(car);
-
-        verify(this.persistenceService.em).persist(car);
-        
-        assertEquals(car, returnedCar);
+        verify(em).remove(car);
         
 	}
 
 	@Test
-	final void testFind() {
+	final public void testUpdate() {
 		
-		Car expected = new Car();
+		Car expectedCar = mock(Car.class);
 
-        when(this.persistenceService.em.find(anyObject(), anyInt()))
-                .thenReturn(expected);
-
-        Car actual = this.persistenceService.find(Car.class, ID);
-
-        assertEquals(actual, expected);
+		when(em.merge(any()))
+        .thenReturn(expectedCar);
         
+        Car returnedCar = persistenceService.update(expectedCar);
+
+        verify(em).merge(expectedCar);
+        
+        assertEquals(expectedCar, returnedCar);
+        
+	}
+
+	@Test
+	final public void testCreate() {
+		
+		Car expected = mock(Car.class);
+
+        doNothing().when(em).persist(any());
+
+        Car returnedCar = persistenceService.create(expected);
+
+        verify(em).persist(expected);
+        
+        assertEquals(expected, returnedCar);
+        
+	}
+
+	@Test
+	final public void testFind() throws EntityNotFoundException {
+		
+		Car expectedCar = mock(Car.class);
+
+        when(em.find(any(), anyInt()))
+                .thenReturn(expectedCar);
+
+        Car returnedCar = persistenceService.find(Car.class, ID);
+
+        assertEquals(expectedCar, returnedCar);
+
+        
+	}
+	
+	@Test(expected = EntityNotFoundException.class)
+	public void testFindEntityNotFound() throws EntityNotFoundException {
+		
+		
+		when(em.find(any(), anyInt()))
+        .thenReturn(null);
+		
+		persistenceService.find(Car.class, ID);
+		
 	}
 
 	
 	@Test
-	final <T> void testFindAll() {
+	final public <T> void testFindAll() {
 		
-		List<Object> carsObject = new ArrayList<>();
+		List<Object> carsExpected = new ArrayList<>();
 		
         Car car = mock(Car.class);
         when(car.getId()).thenReturn(8);
 
-        carsObject.add(car);
+        carsExpected.add(car);
         
         TypedQuery<Object> mockedQuery = mock(TypedQuery.class);
         
-        when(this.persistenceService.em.createQuery(anyString(), any())).thenReturn(mockedQuery);
-        when(mockedQuery.getResultList()).thenReturn(carsObject);
+        when(em.createQuery(anyString(), any())).thenReturn(mockedQuery);
+        when(mockedQuery.getResultList()).thenReturn(carsExpected);
         
-        
-        List<Car> cars = this.persistenceService.findAll(Car.class);
+        List<Car> carsActual = persistenceService.findAll(Car.class);
 
-        assertEquals(cars.size(), 1);
         
-        assertEquals(carsObject, cars);
+        assertEquals(carsExpected, carsActual);
         
 	}
 

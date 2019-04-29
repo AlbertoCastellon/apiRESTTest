@@ -1,8 +1,8 @@
 package acastemi.cars.rest;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,7 +21,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.api.mockito.PowerMockito;
 
 import acastemi.cars.control.CarService;
+import acastemi.cars.control.PersistenceService;
 import acastemi.cars.entity.Car;
+import acastemi.cars.util.EntityNotFoundException;
 import acastemi.cars.util.ValidatorUtil;
 
 @RunWith(PowerMockRunner.class)
@@ -34,6 +37,7 @@ public class CarResourceTest {
 
 		carResource = new CarResource();
 		carResource.carSvc = mock(CarService.class);
+		carResource.carSvc.persistenceService = mock(PersistenceService.class);
 
 	}
 
@@ -48,44 +52,44 @@ public class CarResourceTest {
 
 		when(carResource.carSvc.getAll()).thenReturn(cars);
 
-		Response response = Response.ok(cars, MediaType.APPLICATION_JSON).build();
+		Response responseExpected = Response.ok(cars, MediaType.APPLICATION_JSON).build();
 
-		assertTrue(carResource.findAllCars() instanceof Response);
+		assertEquals(responseExpected.getStatus(), carResource.findAllCars().getStatus());
 
-		assertEquals(response.getStatus(), carResource.findAllCars().getStatus());
-
-		assertEquals(cars, response.getEntity());
+		assertEquals(cars, responseExpected.getEntity());
 
 	}
 
 	@Test
-	final public void testFindCar() {
+	final public void testFindCar() throws EntityNotFoundException {
 
 		Car car = mock(Car.class);
-		car.setId(8);
+		when(car.getId()).thenReturn(8);
 
 		when(carResource.carSvc.get(car.getId())).thenReturn(car);
 
-		Response response = Response.ok(car, MediaType.APPLICATION_JSON).build();
+		Response responseExpected = Response.ok(car, MediaType.APPLICATION_JSON).build();
 
-		assertTrue(carResource.findCar(8) instanceof Response);
+		assertEquals(responseExpected.getStatus(), carResource.findCar(car.getId()).getStatus());
 
-		assertEquals(response.getStatus(), carResource.findCar(car.getId()).getStatus());
+		assertEquals(car, responseExpected.getEntity());
 
-		assertEquals(car, response.getEntity());
+	}
+	
+	@Test
+	public void testFindEntityNotFound() throws EntityNotFoundException {
+		
+		Car car = mock(Car.class);
+		when(car.getId()).thenReturn(7);
 
-		Car car2 = mock(Car.class);
-		car2.setId(7);
+		when(carResource.carSvc.get(car.getId())).thenThrow(EntityNotFoundException.class);
 
-		when(carResource.carSvc.get(car2.getId())).thenReturn(null);
+		Response responseExpected = Response.status(Status.NOT_FOUND)
+				.entity("{\"error\": \"The car with the id " + car.getId() + " does not exist.\"}").build();
 
-		response = Response.status(404)
-				.entity("{\"error\": \"The car with the id " + car2.getId() + " does not exist.\"}").build();
-
-		assertTrue(carResource.findCar(car2.getId()) instanceof Response);
-
-		assertEquals(response.getStatus(), carResource.findCar(car2.getId()).getStatus());
-
+		assertEquals(responseExpected.getStatus(), carResource.findCar(car.getId()).getStatus());
+		
+		
 	}
 
 	@Test
@@ -105,23 +109,31 @@ public class CarResourceTest {
 
 		Response responseCreate = carResource.createCar(car);
 
-		assertTrue(responseCreate instanceof Response);
-
 		assertEquals(response.getStatus(), responseCreate.getStatus());
 
 		assertEquals(response.getEntity(), responseCreate.getEntity());
 
 		
+	}
+	
+	
+	@Test
+	final public void testCreateCarFailed() {
 		
+		Car car = mock(Car.class);
+
+		ArrayList<String> validationErrors = new ArrayList<String>();
 		
+		PowerMockito.mockStatic(ValidatorUtil.class);
+		
+		when(ValidatorUtil.validate(car)).thenReturn(validationErrors);
+
 		validationErrors.add("Some error");
 		validationErrors.add("Another error");
 
-		response = Response.status(400).entity(validationErrors).build();
+		Response response = Response.status(400).entity(validationErrors).build();
 
-		responseCreate = carResource.createCar(car);
-
-		assertTrue(responseCreate instanceof Response);
+		Response responseCreate = carResource.createCar(car);
 
 		assertEquals(response.getStatus(), responseCreate.getStatus());
 
@@ -129,10 +141,10 @@ public class CarResourceTest {
 	}
 
 	@Test
-	final public void testUpdateCar() {
+	final public void testUpdateCar() throws EntityNotFoundException {
 
 		Car car = mock(Car.class);
-		car.setId(0);
+		when(car.getId()).thenReturn(8);
 
 		ArrayList<String> validationErrors = new ArrayList<String>();
 
@@ -145,46 +157,65 @@ public class CarResourceTest {
 		Response response = Response.ok(car, MediaType.APPLICATION_JSON).build();
 		
 		Response responseCreate = carResource.updateCar(car, car.getId());
-		
-		assertTrue(responseCreate instanceof Response);
 
 		assertEquals(response.getStatus(), responseCreate.getStatus());
 
 		assertEquals(response.getEntity(), responseCreate.getEntity());
 		
+
+	}
+	
+	@Test
+	final public void testUpdateCarNotFound() throws EntityNotFoundException {
 		
+		Car car = mock(Car.class);
+		when(car.getId()).thenReturn(8);
+
+		ArrayList<String> validationErrors = new ArrayList<String>();
 		
+		PowerMockito.mockStatic(ValidatorUtil.class);
+
+		when(ValidatorUtil.validate(car)).thenReturn(validationErrors);
 		
 		validationErrors.clear();
 		
-		when(carResource.carSvc.update(car, car.getId())).thenReturn(null);
+		when(carResource.carSvc.update(car, car.getId())).thenThrow(EntityNotFoundException.class);
 
-		response =Response.status(400).entity("{\"error\": \"The car with the id " + car.getId() + " does not exist.\"}")
+		Response response = Response.status(Status.NOT_FOUND).entity("{\"error\": \"The car with the id " + car.getId() + " does not exist.\"}")
 				.build();
 				
-		responseCreate = carResource.updateCar(car, car.getId());
-		
-		assertTrue(responseCreate instanceof Response);
+		Response responseCreate = carResource.updateCar(car, car.getId());
 
 		assertEquals(response.getStatus(), responseCreate.getStatus());
 
 		assertEquals(response.getEntity(), responseCreate.getEntity());
 		
+	}
+	
+	@Test
+	final public void testUpdateCarNotValid() throws EntityNotFoundException {
 		
-		
-		
-		when(carResource.carSvc.update(car, car.getId())).thenReturn(car);
+		Car car = mock(Car.class);
+		when(car.getId()).thenReturn(8);
 
-		response =Response.ok(car, MediaType.APPLICATION_JSON).build();
+		ArrayList<String> validationErrors = new ArrayList<String>();
+		
+		PowerMockito.mockStatic(ValidatorUtil.class);
+		
+		when(ValidatorUtil.validate(car)).thenReturn(validationErrors);
+
+		validationErrors.add("Some error");
+		validationErrors.add("Another error");
+
+		Response response = Response.status(Status.BAD_REQUEST).entity(validationErrors)
+				.build();
 				
-		responseCreate = carResource.updateCar(car, car.getId());
-		
-		assertTrue(responseCreate instanceof Response);
+		Response responseCreate = carResource.updateCar(car, car.getId());
 
 		assertEquals(response.getStatus(), responseCreate.getStatus());
 
 		assertEquals(response.getEntity(), responseCreate.getEntity());
-
+		
 	}
 
 	@Test
@@ -193,32 +224,33 @@ public class CarResourceTest {
 		Car car = mock(Car.class);
 		car.setId(8);
 
-		when(carResource.carSvc.delete(car.getId())).thenReturn(true);
-
 		Response response = Response.noContent().build();
-
-		assertTrue(carResource.deleteCar(8) instanceof Response);
 
 		assertEquals(response.getStatus(), carResource.deleteCar(car.getId()).getStatus());
 
 		assertNull(response.getEntity());
 
-		Car car2 = mock(Car.class);
-		car2.setId(7);
+	}
+	
+	@Test
+	public void testDeleteEntityNotFound() throws EntityNotFoundException {
 
-		when(carResource.carSvc.delete(car2.getId())).thenReturn(false);
+		Car car = mock(Car.class);
+		when(car.getId()).thenReturn(7);
+		
 
-		response = Response.status(400)
-				.entity("{\"error\": \"The car with the id " + car2.getId() + " does not exist.\"}").build();
+		doThrow(EntityNotFoundException.class).when(carResource.carSvc).delete(car.getId());
 
-		assertEquals(response.getStatus(), carResource.deleteCar(car2.getId()).getStatus());
+		Response response = Response.status(Status.NOT_FOUND)
+				.entity("{\"error\": \"The car with the id " + car.getId() + " does not exist.\"}").build();
 
-		Response responseDelete = carResource.deleteCar(car2.getId());
+		assertEquals(response.getStatus(), carResource.deleteCar(car.getId()).getStatus());
 
-		assertTrue(responseDelete instanceof Response);
+		Response responseDelete = carResource.deleteCar(car.getId());
 
 		assertEquals(responseDelete.getEntity(), response.getEntity());
-
+		
+		
 	}
 
 }

@@ -7,8 +7,8 @@ import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 
-import acastemi.cars.control.PersistenceService.EntityNotFoundException;
 import acastemi.cars.entity.Car;
+import acastemi.cars.util.EntityNotFoundException;
 
 /**
  * This class contains the CRUD methods necessary to interact with the database.
@@ -20,7 +20,7 @@ public class CarService {
     private final static Logger LOGGER = Logger.getLogger(CarService.class);
 	
 	@EJB
-	PersistenceService persistenceService;
+	public PersistenceService persistenceService;
 	
 	/**
 	 * Creates a query to retrieve all the Car objects from the database
@@ -72,11 +72,11 @@ public class CarService {
 	 */
 	public Car update(final Car updatedCar, int carId) throws EntityNotFoundException {
 		
+		LOGGER.info("Updating a car in the database");
+		
 		persistenceService.find(Car.class, carId);
 		
 		updatedCar.setId(carId);
-		
-		LOGGER.info("Updating a car in the database");
 
 		return persistenceService.update(updatedCar);
 
@@ -92,9 +92,10 @@ public class CarService {
 	 */
 	public void delete(final int carId) throws EntityNotFoundException {
 		
+		LOGGER.info("Deleting the car: " + carId + " from the database");
+		
 		Car car = persistenceService.find(Car.class, carId);
 		
-		LOGGER.info("Deleting the car: " + car + " from the database");
 		
 		persistenceService.delete(car);
 		

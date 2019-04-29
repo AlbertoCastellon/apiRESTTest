@@ -1,149 +1,126 @@
 package acastemi.cars.control;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import acastemi.cars.entity.Car;
+import acastemi.cars.util.EntityNotFoundException;
 
-class CarServiceTest {
+@RunWith(MockitoJUnitRunner.class)
+public class CarServiceTest {
 
 	@InjectMocks
 	private CarService carService;
 	
 	@Mock
 	PersistenceService persistenceService;
-
-
+	
 	@Test
-	final void testGetAll() {
+	final public void testGetAll() {
 
 		List<Car> cars = new ArrayList<>();
 
 		when(persistenceService.findAll(Car.class)).thenReturn(cars);
-
-		verify(persistenceService).findAll(Car.class);
 
 		assertEquals(cars, carService.getAll());
 
 	}
 
 	@Test
-	final void testGet() {
+	final public void testGet() throws EntityNotFoundException {
 
-		Car car = new Car();
-		car.setId(8);
+		Car carExpected = new Car();
+		carExpected.setId(8);
 
-		when(persistenceService.find(Car.class, car.getId())).thenReturn(car);
+		when(persistenceService.find(Car.class, carExpected.getId())).thenReturn(carExpected);
 
-		Object returnedCar = carService.get(car.getId());
+		Object carReturned = carService.get(carExpected.getId());
 
-		verify(persistenceService).find(Car.class, car.getId());
-
-		assertTrue(returnedCar instanceof Car);
-
-//		Car car = mock(Car.class);
-//		car.setId(8);
-//
-//        when(carService.persistenceService.find(Car.class, 8)).thenReturn(car);
-//        
-//        Car carRetrieved = carService.get(8);
-//
-//        assertEquals(car, carRetrieved);
+		assertEquals(carExpected, carReturned);
 
 	}
 
 	@Test
-	final void testCreate() {
+	final public void testCreate() {
 
-		Car car = new Car();
+		Car carExpected = new Car();
 
-		when(carService.persistenceService.create(car)).thenReturn(car);
+		when(carService.persistenceService.create(carExpected)).thenReturn(carExpected);
 
-		Object returnedCar = carService.create(car);
+		Car carReturned = carService.create(carExpected);
 
-		verify(carService.persistenceService).create(car);
-
-		assertTrue(returnedCar instanceof Car);
+		assertEquals(carExpected, carReturned);
 
 	}
 
 	@Test
-	final void testUpdate() {
+	final public void testUpdate() throws EntityNotFoundException {
+		
+		Car carExpected = new Car();
+		carExpected.setId(8);
+
+		when(carService.persistenceService.find(Car.class,carExpected.getId())).thenReturn(carExpected);
+		
+		when(carService.persistenceService.update(carExpected)).thenReturn(carExpected);
+
+		Object returnedCar = carService.update(carExpected, carExpected.getId());
+
+		assertEquals(returnedCar, carExpected);
+
+		
+	}
+	
+	@Test(expected = EntityNotFoundException.class)
+	public void testUpdateEntityNotFound() throws EntityNotFoundException {
 		
 		Car car = new Car();
-		car.setId(8);
-
-		when(carService.persistenceService.find(Car.class,car.getId())).thenReturn(car);
+		car.setId(9);
 		
-		when(carService.persistenceService.update(car)).thenReturn(car);
-
-		Object returnedCar = carService.update(car, car.getId());
-
-		verify(carService.persistenceService).find(Car.class,car.getId());
+		when(carService.persistenceService.find(Car.class,car.getId())).thenThrow(EntityNotFoundException.class);
 		
-		verify(carService.persistenceService).update(car);
-
-		assertEquals(returnedCar, car);
-		
-		
-		Car car2 = new Car();
-		car2.setId(9);
-		
-		when(carService.persistenceService.find(Car.class,car2.getId())).thenReturn(null);
-		
-		Object returnedCar2 = carService.update(car2, car2.getId());
-		
-		verify(carService.persistenceService).find(Car.class,car.getId());
-		
-		verify(carService.persistenceService, never()).update(car2);
-
-		assertNotEquals(returnedCar2, car2);
-		
-		assertNull(returnedCar2);
+		carService.update(car, car.getId());
 		
 		
 	}
 
 	@Test
-	final void testDelete() {
+	final public void testDelete() throws EntityNotFoundException {
 		
 		Car car = new Car();
 		car.setId(8);
 
 		when(carService.persistenceService.find(Car.class,car.getId())).thenReturn(car);
 
-		boolean carDeleted = carService.delete(car.getId());
-
-		verify(carService.persistenceService).find(Car.class,car.getId());
+		carService.delete(car.getId());
 		
 		verify(carService.persistenceService).delete(car);
-
-		assertTrue(carDeleted);
+		
+	}
+	
+	@Test(expected = EntityNotFoundException.class)
+	public void testDeleteEntityNotFound() throws EntityNotFoundException {
+		
+		Car car = new Car();
+		car.setId(9);
+		
+		when(carService.persistenceService.find(Car.class, car.getId())).thenThrow(EntityNotFoundException.class);
+		
+		carService.delete(car.getId());
+		
+		verify(carService.persistenceService, never()).delete(car);
 		
 		
-		Car car2 = new Car();
-		car2.setId(9);
-		
-		when(carService.persistenceService.find(Car.class,car2.getId())).thenReturn(null);
-		
-		carDeleted = carService.delete(car2.getId());
-		
-		verify(carService.persistenceService).find(Car.class,car.getId());
-		
-		verify(carService.persistenceService, never()).delete(car2);
-
-		assertFalse(carDeleted);
 	}
 
 }
