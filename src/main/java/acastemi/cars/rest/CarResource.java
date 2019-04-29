@@ -15,13 +15,14 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 
 import acastemi.cars.control.CarService;
 import acastemi.cars.control.PersistenceService;
-import acastemi.cars.control.PersistenceService.EntityNotFoundException;
 import acastemi.cars.entity.Car;
+import acastemi.cars.util.EntityNotFoundException;
 import acastemi.cars.util.ValidatorUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,7 +47,7 @@ public class CarResource {
 	 * Initializes the Enterprise Java Bean
 	 */
 	@EJB
-	private CarService carSvc;
+	protected CarService carSvc;
 	
 	private final static Logger LOGGER = Logger.getLogger(CarService.class);
 
@@ -91,7 +92,7 @@ public class CarResource {
 		} catch (EntityNotFoundException e) {
 			
 			LOGGER.info("Failed to find the car with the id " + carId + " in the database.");
-			return Response.status(404).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
+			return Response.status(Status.NOT_FOUND).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
 			.build();
 			
 		}
@@ -113,14 +114,14 @@ public class CarResource {
 		      @ApiResponse(code = 404, message = "{\"error\": \"The car with the id {carId} does not exist.\"}") })
 	public Response createCar(final Car carRequest) {
 		
-		final ArrayList<String> validationsErrors = ValidatorUtil.validate(carRequest);
+		ArrayList<String> validationsErrors = ValidatorUtil.validate(carRequest);
 		
 		if(!validationsErrors.isEmpty()) { 
 			
 			for(String error : validationsErrors)
 				LOGGER.info(error);
 			
-			return Response.status(400).entity(validationsErrors)
+			return Response.status(Status.BAD_REQUEST).entity(validationsErrors)
 					.build();
 			
 		}
@@ -151,7 +152,7 @@ public class CarResource {
 			for(String error : validationsErrors)
 				LOGGER.info(error);
 			
-			return Response.status(400).entity(validationsErrors)
+			return Response.status(Status.BAD_REQUEST).entity(validationsErrors)
 					.build();
 		}
 		
@@ -160,7 +161,7 @@ public class CarResource {
 			car = carSvc.update(carRequest, carId);
 			return Response.ok(car, MediaType.APPLICATION_JSON).build();
 		} catch (EntityNotFoundException e) {
-			return Response.status(400).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
+			return Response.status(Status.NOT_FOUND).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
 					.build();
 		}
 		
@@ -190,7 +191,7 @@ public class CarResource {
 			
 		}catch (EntityNotFoundException e) {			
 			
-			return Response.status(400).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
+			return Response.status(Status.NOT_FOUND).entity("{\"error\": \"The car with the id " + carId + " does not exist.\"}")
 					.build();	
 			
 		}
