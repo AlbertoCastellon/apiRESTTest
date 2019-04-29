@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import acastemi.cars.control.CarService;
 import acastemi.cars.control.PersistenceService;
 import acastemi.cars.entity.Car;
+import acastemi.cars.timer.CheckCarsTimer;
 import acastemi.cars.util.EntityNotFoundException;
 import acastemi.cars.util.ValidatorUtil;
 import io.swagger.annotations.Api;

@@ -3,6 +3,7 @@ package acastemi.cars.entity;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import javax.enterprise.inject.Default;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.ws.rs.DefaultValue;
 
 
 /**
@@ -55,6 +57,10 @@ public class Car {
 	
 	@Column(name = "lastUpdated")
 	private Date lastUpdated;
+	
+	@Column(name = "checked")
+	@DefaultValue(value = "false")
+	private boolean checked;
 	
 	@PrePersist
 	protected void onCreate() {
@@ -127,6 +133,15 @@ public class Car {
 
 	public void setLastUpdated(Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
+	}
+	
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		this.checked = checked;
 	}
 
 	@Override
