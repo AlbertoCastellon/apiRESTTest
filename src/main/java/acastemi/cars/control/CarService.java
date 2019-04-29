@@ -32,6 +32,17 @@ public class CarService {
 		
 		return persistenceService.findAll(Car.class);
 	}
+	
+	/**
+	 * Creates a query to retrieve all the Car objects from the database with checked attribute = false
+	 * @return List of Car objects, empty array if there is none
+	 */
+	public List<Car> getAllNotChecked() {
+		
+		LOGGER.info("Getting all the cars from the database that are not checked");
+		
+		return persistenceService.findWithNamedQuery("CarsCheckedFalse");
+	}
 
 	
 	/**

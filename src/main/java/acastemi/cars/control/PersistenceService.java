@@ -61,7 +61,13 @@ public class PersistenceService {
                 .createQuery("SELECT data FROM " + className + " data", type);
         return query.getResultList();
         
-    } 
+    }
+	
+	
+	public <T> List<T> findWithNamedQuery(final String namedQueryName) {
+		return em.createNamedQuery(namedQueryName).getResultList();
+	} 
+
 
 
 }
