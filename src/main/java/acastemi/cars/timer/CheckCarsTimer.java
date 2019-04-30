@@ -27,7 +27,7 @@ public class CheckCarsTimer {
 	private static final Logger LOGGER = Logger.getLogger(CheckCarsTimer.class);
 
 	@Schedule(minute = "*/2", hour = "*")
-	public void execute() {
+	public void checkCarsPeriodically() {
 
 		List<Car> carList = carSvc.getAllNotChecked();
 
