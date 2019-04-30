@@ -3,6 +3,7 @@ package acastemi.cars.entity;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import javax.enterprise.inject.Default;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,11 +12,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.ws.rs.DefaultValue;
 
 
 /**
@@ -28,8 +31,11 @@ import javax.validation.constraints.Size;
  *
  */
 @Entity
+@NamedQuery(name="CarsCheckedFalse", query = "SELECT a FROM Car a WHERE a.checked=false")
 @Table
 public class Car {
+	
+	public final static String SELECT_CARS_NOT_CHECKED= "CarsCheckedFalse";
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -56,6 +62,10 @@ public class Car {
 	@Column(name = "lastUpdated")
 	private Date lastUpdated;
 	
+	@Column(name = "checked")
+	@DefaultValue(value = "false")
+	private boolean checked;
+	
 	@PrePersist
 	protected void onCreate() {
 		createdAt = new Date();
@@ -66,6 +76,8 @@ public class Car {
 	protected void onUpdate() {
 		lastUpdated = new Date();
 	}
+	
+	
 
 	public Car() {
 		
@@ -127,6 +139,15 @@ public class Car {
 
 	public void setLastUpdated(Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
+	}
+	
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		this.checked = checked;
 	}
 
 	@Override
