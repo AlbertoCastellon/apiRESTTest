@@ -41,7 +41,7 @@ public class CarService {
 		
 		LOGGER.info("Getting all the cars from the database that are not checked");
 		
-		return persistenceService.findWithNamedQuery("CarsCheckedFalse");
+		return persistenceService.findWithNamedQuery(Car.SELECT_CARS_NOT_CHECKED);
 	}
 
 	

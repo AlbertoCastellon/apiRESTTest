@@ -12,6 +12,12 @@ import acastemi.cars.control.CarService;
 import acastemi.cars.entity.Car;
 import acastemi.cars.util.EntityNotFoundException;
 
+
+/**
+ * A Singleton class created and initialized at the start of the application.
+ * 
+ * Check the cars from the db every 2 minutes and changes the field "checked" to true if it was false.
+ */
 @Singleton
 public class CheckCarsTimer {
 
@@ -20,7 +26,7 @@ public class CheckCarsTimer {
 
 	private static final Logger LOGGER = Logger.getLogger(CheckCarsTimer.class);
 
-	@Schedule(second = "*/10", minute = "*", hour = "*")
+	@Schedule(minute = "*/2", hour = "*")
 	public void execute() {
 
 		List<Car> carList = carSvc.getAllNotChecked();

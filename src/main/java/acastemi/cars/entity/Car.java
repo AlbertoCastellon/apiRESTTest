@@ -31,9 +31,11 @@ import javax.ws.rs.DefaultValue;
  *
  */
 @Entity
-@NamedQuery(name="CarsCheckedFalse", query="select a from Car a where a.checked=false")
+@NamedQuery(name="CarsCheckedFalse", query = "SELECT a FROM Car a WHERE a.checked=false")
 @Table
 public class Car {
+	
+	public final static String SELECT_CARS_NOT_CHECKED= "CarsCheckedFalse";
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -74,6 +76,8 @@ public class Car {
 	protected void onUpdate() {
 		lastUpdated = new Date();
 	}
+	
+	
 
 	public Car() {
 		
