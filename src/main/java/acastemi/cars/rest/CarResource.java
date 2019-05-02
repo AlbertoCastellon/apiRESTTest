@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 
 import javax.ejb.EJB;
+import javax.jms.JMSException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -19,10 +20,12 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import acastemi.cars.control.CarService;
-import acastemi.cars.control.PersistenceService;
 import acastemi.cars.entity.Car;
-import acastemi.cars.timer.CheckCarsTimer;
+import acastemi.cars.jms.SLSBeanProductor;
 import acastemi.cars.util.EntityNotFoundException;
 import acastemi.cars.util.ValidatorUtil;
 import io.swagger.annotations.Api;
@@ -50,7 +53,13 @@ public class CarResource {
 	@EJB
 	protected CarService carSvc;
 	
+	@EJB
+	protected SLSBeanProductor productorSLSBBean;
+	
+	
 	private final static Logger LOGGER = Logger.getLogger(CarService.class);
+	
+	private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
 	
 	/**
@@ -115,14 +124,14 @@ public class CarResource {
 		      @ApiResponse(code = 404, message = "{\"error\": \"The car with the id {carId} does not exist.\"}") })
 	public Response createCar(final Car carRequest) {
 		
-		ArrayList<String> validationsErrors = ValidatorUtil.validate(carRequest);
+		ArrayList<String> validationErrors = ValidatorUtil.validate(carRequest);
 		
-		if(!validationsErrors.isEmpty()) { 
+		if(!validationErrors.isEmpty()) { 
 			
-			for(String error : validationsErrors)
+			for(String error : validationErrors)
 				LOGGER.info(error);
 			
-			return Response.status(Status.BAD_REQUEST).entity(validationsErrors)
+			return Response.status(Status.BAD_REQUEST).entity(validationErrors)
 					.build();
 			
 		}
@@ -146,14 +155,14 @@ public class CarResource {
 	@Path("{carId}")
 	public Response updateCar(final Car carRequest, @ApiParam(value = "id of the car that needs to be modified", required = true) @PathParam("carId") final int carId) {
 		
-		final ArrayList<String> validationsErrors = ValidatorUtil.validate(carRequest);
+		final ArrayList<String> validationErrors = ValidatorUtil.validate(carRequest);
 		
-		if(!validationsErrors.isEmpty()) {
+		if(!validationErrors.isEmpty()) {
 			
-			for(String error : validationsErrors)
+			for(String error : validationErrors)
 				LOGGER.info(error);
 			
-			return Response.status(Status.BAD_REQUEST).entity(validationsErrors)
+			return Response.status(Status.BAD_REQUEST).entity(validationErrors)
 					.build();
 		}
 		
@@ -198,6 +207,65 @@ public class CarResource {
 		}
 					
 		
+	}
+	
+	
+	//Queue tests
+	
+	@POST
+	@Path("/queue")
+	public Response createCarQueue(final Car carRequest) {
+		
+		try {
+			
+			productorSLSBBean.sendJMSMessage("CREATE", JSON_MAPPER.writeValueAsString(carRequest), -1);
+			
+		} catch (JMSException | JsonProcessingException e) {
+			
+			e.printStackTrace();
+			
+		}
+		return Response.accepted(carRequest).build();
+
+	}
+	
+	@DELETE
+	@Path("/queue/{carId}")
+	public Response deleteCarQueue(@PathParam("carId") final int carId) {
+		
+		try {
+			
+			productorSLSBBean.sendJMSMessage("DELETE", null, carId);
+						
+			
+		}catch (JMSException e) {			
+			
+			e.printStackTrace();	
+			
+		}
+		
+		return Response.noContent().build();
+		
+						
+	}
+	
+	@PUT
+	@Path("/queue/{carId}")
+	public Response updateCarQueue(final Car carRequest, @PathParam("carId") final int carId) {
+		
+		try {
+			
+			productorSLSBBean.sendJMSMessage("UPDATE", JSON_MAPPER.writeValueAsString(carRequest), carId);
+									
+		} catch (JMSException | JsonProcessingException e) {			
+			
+			e.printStackTrace();	
+			
+		}
+		
+		
+		return Response.noContent().build();
+				
 	}
 
 }
