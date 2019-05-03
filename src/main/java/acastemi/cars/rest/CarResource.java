@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import acastemi.cars.control.CarService;
 import acastemi.cars.entity.Car;
 import acastemi.cars.jms.SLSBeanProductor;
+import acastemi.cars.util.CRUDForQueue;
 import acastemi.cars.util.EntityNotFoundException;
 import acastemi.cars.util.ValidatorUtil;
 import io.swagger.annotations.Api;
@@ -218,7 +219,7 @@ public class CarResource {
 		
 		try {
 			
-			productorSLSBBean.sendJMSMessage("CREATE", JSON_MAPPER.writeValueAsString(carRequest), -1);
+			productorSLSBBean.sendJMSMessage(CRUDForQueue.CREATE, JSON_MAPPER.writeValueAsString(carRequest), -1);
 			
 		} catch (JMSException | JsonProcessingException e) {
 			
@@ -235,7 +236,7 @@ public class CarResource {
 		
 		try {
 			
-			productorSLSBBean.sendJMSMessage("DELETE", null, carId);
+			productorSLSBBean.sendJMSMessage(CRUDForQueue.DELETE, null, carId);
 						
 			
 		}catch (JMSException e) {			
@@ -255,7 +256,7 @@ public class CarResource {
 		
 		try {
 			
-			productorSLSBBean.sendJMSMessage("UPDATE", JSON_MAPPER.writeValueAsString(carRequest), carId);
+			productorSLSBBean.sendJMSMessage(CRUDForQueue.UPDATE, JSON_MAPPER.writeValueAsString(carRequest), carId);
 									
 		} catch (JMSException | JsonProcessingException e) {			
 			

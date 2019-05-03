@@ -10,6 +10,8 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
+import acastemi.cars.util.CRUDForQueue;
+
 /**
  * 
  * Creates a connection to a JMS Queue to be able to write messages with petitions to perform CRUD actions on the DB.
@@ -31,7 +33,7 @@ public class SLSBeanProductor {
 	 * @param carId id of the car to UPDATE or DELETE, -1 in the case of the CREATE
 	 * @throws JMSException
 	 */
-	public void sendJMSMessage(String crud, String msg, int carId) throws JMSException {
+	public void sendJMSMessage(CRUDForQueue crud, String msg, int carId) throws JMSException {
 		
 		Connection connection = null;
 		Session session = null;
@@ -44,7 +46,7 @@ public class SLSBeanProductor {
 
 			TextMessage tm = session.createTextMessage(msg);
 
-			tm.setStringProperty("CRUD", crud);
+			tm.setStringProperty("CRUD", crud.toString());
 			tm.setIntProperty("carId", carId);
 			
 			MessageProducer messageProducer = session.createProducer(queue);

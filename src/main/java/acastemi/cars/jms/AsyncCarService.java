@@ -23,11 +23,11 @@ import acastemi.cars.util.EntityNotFoundException;
  * Stateless, server-side, transaction-aware component 
  * that is driven by a Java message (javax.jms.message). It is invoked by the EJB 
  * Container when a message is received from the JMS Queue. 
- * 
+ * This enables to perform petitions asynchronously.
  *
  */
 @MessageDriven(mappedName = "myQueue")  
-public class MyListener implements MessageListener {  
+public class AsyncCarService implements MessageListener {  
 	  
 	/**
 	 * Initializes the Enterprise Java Bean
@@ -38,7 +38,7 @@ public class MyListener implements MessageListener {
 	private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
 	
-	private final static Logger LOGGER = Logger.getLogger(MyListener.class);
+	private final static Logger LOGGER = Logger.getLogger(AsyncCarService.class);
 	
 	/**
 	 * It executes the action (create,update,delete), when a JMS petition is on the Queue
@@ -48,25 +48,37 @@ public class MyListener implements MessageListener {
         try {  
         	
 	        TextMessage msg=(TextMessage) m;
-	   	
-	        if(msg.getStringProperty("CRUD").equals("CREATE")) {
-	        	
-	        	LOGGER.info("Creating a Car from a Queue petition");
 	        
-	        	carSvc.create( JSON_MAPPER.readValue(msg.getText(), Car.class));
 	        
-	        } else if (msg.getStringProperty("CRUD").equals("DELETE")) {
-	        	
-	        	LOGGER.info("Deleting a Car from a Queue petition");
+	        switch (msg.getStringProperty("CRUD")) {
 	        
-				carSvc.delete(msg.getIntProperty("carId"));
-	        
-	        } else if (msg.getStringProperty("CRUD").equals("UPDATE")) {
-	        	
-	        	LOGGER.info("Updating Car from a Queue petition");
-	        	
-	        	carSvc.update( JSON_MAPPER.readValue(msg.getText(), Car.class), msg.getIntProperty("carId"));
-				
+				case "CREATE":
+					
+					LOGGER.info("Creating a Car from a Queue petition");
+			        
+		        	carSvc.create( JSON_MAPPER.readValue(msg.getText(), Car.class));
+		        	
+					break;
+					
+				case "DELETE":
+					
+					LOGGER.info("Deleting a Car from a Queue petition");
+			        
+					carSvc.delete(msg.getIntProperty("carId"));
+					
+					break;
+					
+				case "UPDATE":
+					
+					LOGGER.info("Updating Car from a Queue petition");
+		        	
+		        	carSvc.update( JSON_MAPPER.readValue(msg.getText(), Car.class), msg.getIntProperty("carId"));
+		        	
+					break;
+	
+				default:
+					LOGGER.info("Petition invalid..");
+					break;
 			}
 	     
         
