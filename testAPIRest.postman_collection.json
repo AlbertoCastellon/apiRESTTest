@@ -1,0 +1,630 @@
+{
+	"info": {
+		"_postman_id": "8c29b632-ee79-4a67-9fe9-a8872683b3d9",
+		"name": "testAPIRest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get all cars",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2528abb0-8236-48ba-8eb4-815f8b34d64a",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars"
+					]
+				},
+				"description": "test\t"
+			},
+			"response": []
+		},
+		{
+			"name": "Create a car Ok",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dc19c185-dd48-40fc-8a0a-8719ad22b4dc",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201,202]);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Data was persisted correctly\", function () {",
+							"    pm.expect(jsonData.brand.name).to.eql('Seat');",
+							"});",
+							"",
+							"pm.environment.set(\"carId\", jsonData.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"brand\": {\n        \"name\": \"Seat\"\n    },\n    \"registration\": \"2019-02-09T12:38:05+00:00\",\n    \"country\": {\n        \"name\": \"Spain\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a car Bad Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ee7d04c0-a361-4354-9ddb-4e62015cfe21",
+						"exec": [
+							"pm.test(\"Status code is 400 Bad Request\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Error message should be present for country\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.include('Country may not be empty.');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"brand\": \"Seat\", \n\t\"registration\": \"2019-02-09T12:38:05+00:00\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a car Ok",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2847f3f1-0ca6-4d5e-9b9b-0e025bf20906",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Data was retrieved correctly\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.brand.name).to.eql('Seat');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars/{{carId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars",
+						"{{carId}}"
+					]
+				},
+				"description": "r"
+			},
+			"response": []
+		},
+		{
+			"name": "Get a car Not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2847f3f1-0ca6-4d5e-9b9b-0e025bf20906",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"    ",
+							"pm.test(\"The car does not exists\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.error).to.include('The car with the id 0 does not exist.');",
+							"}); ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars/0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars",
+						"0"
+					]
+				},
+				"description": "r"
+			},
+			"response": []
+		},
+		{
+			"name": "Modify a car Ok",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "17c4aabe-a967-413f-a07e-885f1b1e48f3",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"brand\": {\n        \"name\": \"TestPut\"\n    },\n    \"registration\": \"2019-02-09T12:38:05+00:00\",\n    \"country\": {\n        \"name\": \"TestPut\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars/{{carId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars",
+						"{{carId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Modify a car Not Found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "17c4aabe-a967-413f-a07e-885f1b1e48f3",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"    ",
+							"pm.test(\"The car does not exists\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.error).to.include('The car with the id 0 does not exist.');",
+							"}); ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "\n    {\n        \"brand\": \"BMW\",\n        \"registration\": \"2019-02-09T12:38:05+00:00\",\n        \"country\": \"Grea\"\n       \n    }"
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars/0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars",
+						"0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get auth token Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b962cdc0-2162-4432-8ce0-e36e8209851a",
+						"exec": [
+							"",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"var authToken = postman.getResponseHeader(\"Authorization\");",
+							"authToken = authToken.replace(\"Bearer \",\"\");",
+							"",
+							"pm.environment.set(\"adminAuthToken\", authToken);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/auth/login?name=admin&password=passwordAdmin&rememberme=false\n",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"auth",
+						"login"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "admin"
+						},
+						{
+							"key": "password",
+							"value": "passwordAdmin"
+						},
+						{
+							"key": "rememberme",
+							"value": "false\n"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a car 401 No Auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e2359178-2fe0-4504-bdec-81da0fdd1d32",
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars/{{carId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars",
+						"{{carId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a car Not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e2359178-2fe0-4504-bdec-81da0fdd1d32",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"    ",
+							"pm.test(\"The car does not exists\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.error).to.include('The car with the id 0 does not exist.');",
+							"}); ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{adminAuthToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars/0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars",
+						"0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a car 401 Ok",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e2359178-2fe0-4504-bdec-81da0fdd1d32",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{adminAuthToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars/{{carId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars",
+						"{{carId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post  Queue",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"brand\": {\n        \"name\": \"Seat\"\n    },\n    \"registration\": \"2019-02-09T12:38:05+00:00\",\n    \"country\": {\n        \"name\": \"Spain\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars/mensaje",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars",
+						"mensaje"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Put Queue",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"brand\": {\n        \"name\": \"SeatTest\"\n    },\n    \"registration\": \"2019-02-09T12:38:05+00:00\",\n    \"country\": {\n        \"name\": \"SpainTest\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars/queue/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars",
+						"queue",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Queue",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/cars/cars/queue/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cars",
+						"cars",
+						"queue",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

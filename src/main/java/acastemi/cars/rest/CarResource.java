@@ -1,9 +1,12 @@
 package acastemi.cars.rest;
 
 
+import static acastemi.cars.security.Constants.ADMIN;
+import static acastemi.cars.security.Constants.USER;
+
 import java.util.ArrayList;
 
-
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.jms.JMSException;
 import javax.ws.rs.Consumes;
@@ -186,6 +189,7 @@ public class CarResource {
 	 * error if the Car object doesn't exists
 	 */
 	@DELETE
+    @RolesAllowed(ADMIN)
 	@ApiOperation(value = "Deletes a car in the system")
 	@ApiResponses(value = { 
 		      @ApiResponse(code = 400, message = "Validation error", 
